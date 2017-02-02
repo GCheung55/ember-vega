@@ -1,13 +1,22 @@
-# ember-vega
+# [WIP] ember-vega
 
-This README outlines the details of collaborating on this Ember addon.
+Ember addon to use Vega.js, a visualization grammar built on D3.
+
+[Check Vega documentation](https://github.com/vega/vega/wiki/Documentation).
 
 ## Installation
+
+* `ember install ember-vega`
+
+## Usage
+
+Components coming soon!
+
+## Contribute
 
 * `git clone <repository-url>` this repository
 * `cd ember-vega`
 * `npm install`
-* `bower install`
 
 ## Running
 

@@ -1,7 +1,7 @@
 {
   "name": "ember-vega",
   "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Ember addon to use Vega.js, a visualization grammar built on D3.",
   "keywords": [
     "ember-addon",
     "d3",
