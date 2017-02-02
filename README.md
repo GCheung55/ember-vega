@@ -12,6 +12,12 @@ Ember addon to use vega, a visualization grammar built on D3.js
 
 Components coming soon!
 
+Access `vega` package:
+
+```javascript
+import vega from 'vega';
+```
+
 ## Contribute
 
 * `git clone <repository-url>` this repository
