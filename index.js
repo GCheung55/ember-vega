@@ -25,9 +25,9 @@ function findHost() {
 module.exports = {
     name: 'ember-vega',
 
-    // isDevelopingAddon: function() {
-    //     return true;
-    // },
+    isDevelopingAddon: function() {
+        return true;
+    },
 
     included: function(app) {
         this._super.included && this._super.included.apply(this, arguments);
