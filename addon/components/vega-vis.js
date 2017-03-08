@@ -74,6 +74,8 @@ export default Ember.Component.extend({
         //     });
         // }
 
+        this._sizeVis(vis);
+
         // Optional.
         padding && vis.padding(padding);
         background && vis.background(background);
@@ -103,20 +105,30 @@ export default Ember.Component.extend({
 
     onWindowResize() {
         const vis = get(this, 'vis');
+
         if (vis) {
-            const element = this.$();
-            const width = element.width();
-            const height = element.height();
+
 
             // TODO: Check subtract height and width from padding before setting?
-            vis.width(width).height(height).run();
+            this._sizeVis(vis).run('enter');
         }
+    },
+
+    _sizeVis(vis) {
+        const element = this.$();
+        const width = element.width();
+        const height = element.height();
+
+        // TODO: Check subtract height and width from padding before setting?
+        vis.width(width).height(height);
+
+        return vis;
     },
 
     _setupWindowResize() {
         if (!get(this, 'fastboot')) {
             this._onWindowResize = () => {
-                run.debounce(this, 'onWindowResize', 300);
+                run.debounce(this, 'onWindowResize', 50);
             };
 
             $(window).on('resize', this._onWindowResize);
