@@ -91,7 +91,7 @@ export default Ember.Component.extend({
     },
 
     willDestroyElement() {
-        this._teardownResize();
+        this._teardownWindowResize();
 
         let vis = this.get('vis');
 
