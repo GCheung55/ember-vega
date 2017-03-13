@@ -5,12 +5,9 @@ import layout from '../templates/components/vega-vis';
 const {
     get,
     getProperties,
-    setProperties,
     computed,
     $,
     run,
-    on,
-    observer,
     isArray,
     assert
 } = Ember;
@@ -77,8 +74,13 @@ export default Ember.Component.extend({
         this._sizeVis(vis);
 
         // Optional.
-        padding && vis.padding(padding);
-        background && vis.background(background);
+        if(padding) {
+            vis.padding(padding);
+        }
+
+        if (background) {
+            vis.background(background);
+        }
 
         vis.logLevel(vg[logLevel || 'Warn']);
         vis.renderer(rendererType);
