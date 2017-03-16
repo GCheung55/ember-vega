@@ -9,7 +9,9 @@ const {
     $,
     run,
     isArray,
-    assert
+    assert,
+    observer,
+    isPresent
 } = Ember;
 
 export default Ember.Component.extend({
@@ -24,6 +26,8 @@ export default Ember.Component.extend({
     background: undefined,
 
     padding: undefined,
+
+    aspectRatio: undefined,
 
     fastboot: computed(function() {
         let owner = Ember.getOwner(this);
@@ -46,7 +50,8 @@ export default Ember.Component.extend({
 
         assert('spec property must be defined', !!spec);
 
-        if (isArray(data)) {
+        // if spec does not contain a data property, set the data object on it.
+        if (isArray(data) && !('data' in spec)) {
             spec.data = data;
         }
 
@@ -109,17 +114,17 @@ export default Ember.Component.extend({
         const vis = get(this, 'vis');
 
         if (vis) {
-
-
             // TODO: Check subtract height and width from padding before setting?
             this._sizeVis(vis).run('enter');
         }
     },
 
     _sizeVis(vis) {
+        const aspectRatio = get(this, 'aspectRatio');
         const element = this.$();
         const width = element.width();
-        const height = element.height();
+        // Check that aspectRatio is not null or undefined.
+        const height = isPresent(aspectRatio) ? aspectRatio * width : element.height();
 
         // TODO: Check subtract height and width from padding before setting?
         vis.width(width).height(height);
@@ -141,5 +146,16 @@ export default Ember.Component.extend({
         if (!get(this, 'fastboot')) {
             $(window).off('resize', this._onWindowResize);
         }
-    }
+    },
+
+    /**
+     * Re-size the vis if aspectRatio changes.
+     */
+    _observeDimensions: observer('aspectRatio', function(){
+        const vis = get(this, 'vis');
+
+        if (vis) {
+            this._sizeVis(vis).run('enter');
+        }
+    }),
 });
