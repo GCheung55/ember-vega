@@ -23,11 +23,23 @@ export default Ember.Component.extend({
 
     logLevel: 'Warn',
 
-    background: undefined,
+    background: null,
 
-    padding: undefined,
+    padding: null,
 
-    aspectRatio: undefined,
+    aspectRatio: null,
+
+    /**
+     * Events to add to vega view instance.
+     * @type {object}
+     */
+    events: null,
+
+    /**
+     * Signal events to add to vega view instance.
+     * @type {object|null}
+     */
+    signalEvents: null,
 
     fastboot: computed(function() {
         let owner = Ember.getOwner(this);
@@ -45,8 +57,10 @@ export default Ember.Component.extend({
             rendererType,
             padding,
             background,
-            logLevel
-        } = getProperties(this, 'data', 'spec', 'rendererType', 'padding', 'background', 'logLevel');
+            logLevel,
+            events,
+            signalEvents
+        } = getProperties(this, 'data', 'spec', 'rendererType', 'padding', 'background', 'logLevel', 'events', 'signalEvents');
 
         assert('spec property must be defined', !!spec);
 
@@ -94,6 +108,9 @@ export default Ember.Component.extend({
 
         this.set('vis', vis);
 
+        this._addEvents(events);
+        this._addSignalEvents(signalEvents);
+
         return this._super(...arguments);
     },
 
@@ -103,6 +120,13 @@ export default Ember.Component.extend({
         let vis = this.get('vis');
 
         if (vis) {
+            const {
+                events,
+                signalEvents
+            } = getProperties(this, 'events', 'signalEvents');
+
+            this._removeEvents(events);
+            this._removeSignalEvents(signalEvents);
             vis.finalize();
             this.set('vis', undefined);
         }
@@ -115,8 +139,39 @@ export default Ember.Component.extend({
 
         if (vis) {
             // TODO: Check subtract height and width from padding before setting?
-            this._sizeVis(vis).run('enter');
+            this._sizeVis(vis);
+            vis.run('enter');
         }
+
+        return this;
+    },
+
+    _invokeEventMethod(method, events) {
+        const vis = get(this, 'vis');
+
+        if (vis) {
+            for (let [event, handler] of Object.entries(events)) {
+                vis[method](event, handler);
+            }
+        }
+
+        return this;
+    },
+
+    _addEvents(events = {}) {
+        return this._invokeEventMethod('addEventListener', events);
+    },
+
+    _removeEvents(events = {}) {
+        return this._invokeEventMethod('removeEventListener', events);
+    },
+
+    _addSignalEvents(signalEvents = {}) {
+        return this._invokeEventMethod('addSignalListener', signalEvents);
+    },
+
+    _removeSignalEvents(signalEvents = {}) {
+        return this._invokeEventMethod('removeSignalListener', signalEvents);
     },
 
     _sizeVis(vis) {
@@ -129,7 +184,7 @@ export default Ember.Component.extend({
         // TODO: Check subtract height and width from padding before setting?
         vis.width(width).height(height);
 
-        return vis;
+        return this;
     },
 
     _setupWindowResize() {
@@ -155,7 +210,10 @@ export default Ember.Component.extend({
         const vis = get(this, 'vis');
 
         if (vis) {
-            this._sizeVis(vis).run('enter');
+            this._sizeVis(vis);
+            vis.run('enter');
         }
+
+        return this;
     }),
 });

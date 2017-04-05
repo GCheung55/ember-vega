@@ -1,6 +1,13 @@
 <div class="example">
     {{vega-vis
-        data=data spec=spec
+        data=data
+        spec=spec
+        events=(hash
+            click=(action "clickEventHandler")
+        )
+        signalEvents=(hash
+            width=(action "widthSignalHandler")
+        )
     }}
 </div>
 
