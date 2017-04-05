@@ -149,7 +149,7 @@ export default Ember.Component.extend({
     _invokeEventMethod(method, events) {
         const vis = get(this, 'vis');
 
-        if (vis) {
+        if (vis && events) {
             for (let [event, handler] of Object.entries(events)) {
                 vis[method](event, handler);
             }
