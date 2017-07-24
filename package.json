@@ -48,7 +48,7 @@
     "ember-load-initializers": "^0.5.1",
     "ember-resolver": "^2.0.3",
     "loader.js": "^4.0.10",
-    "vega": "^3.0.0-beta"
+    "vega": "^3.0.0-rc3"
   },
   "engines": {
     "node": ">= 0.12.0"
