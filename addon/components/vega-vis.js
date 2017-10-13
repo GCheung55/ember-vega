@@ -29,6 +29,8 @@ export default Ember.Component.extend({
 
     aspectRatio: null,
 
+    isResizable: true,
+
     /**
      * Events to add to vega view instance.
      * @type {object}
@@ -134,17 +136,26 @@ export default Ember.Component.extend({
         return this._super(...arguments);
     },
 
-    onWindowResize() {
-        const vis = get(this, 'vis');
+    windowResize() {
+        // Only resize if isResizable.
+        if (get(this, 'isResizable')) {
+            const vis = get(this, 'vis');
 
-        if (vis) {
-            // TODO: Check subtract height and width from padding before setting?
-            this._sizeVis(vis);
-            vis.run('enter');
+            if (vis) {
+                // TODO: Check subtract height and width from padding before setting?
+                this._sizeVis(vis);
+                vis.run('enter');
+            }
         }
 
         return this;
     },
+
+    scheduleOnceResize() {
+        run.scheduleOnce('afterRender', this, 'windowResize');
+
+        return this;
+    }
 
     _invokeEventMethod(method, events) {
         const vis = get(this, 'vis');
@@ -190,7 +201,7 @@ export default Ember.Component.extend({
     _setupWindowResize() {
         if (!get(this, 'fastboot')) {
             this._onWindowResize = () => {
-                run.debounce(this, 'onWindowResize', 50);
+                run.debounce(this, 'scheduleOnceResize', 50);
             };
 
             $(window).on('resize', this._onWindowResize);
@@ -207,12 +218,7 @@ export default Ember.Component.extend({
      * Re-size the vis if aspectRatio changes.
      */
     _observeDimensions: observer('aspectRatio', function(){
-        const vis = get(this, 'vis');
-
-        if (vis) {
-            this._sizeVis(vis);
-            vis.run('enter');
-        }
+        this.scheduleOnceResize();
 
         return this;
     }),
