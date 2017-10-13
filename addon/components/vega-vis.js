@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import vg from 'vega';
 import layout from '../templates/components/vega-vis';
+import diffAttrs from 'ember-diff-attrs';
 
 const {
     get,
@@ -29,6 +30,8 @@ export default Ember.Component.extend({
 
     aspectRatio: null,
 
+    isVisible: true,
+
     isResizable: true,
 
     /**
@@ -47,6 +50,39 @@ export default Ember.Component.extend({
         let owner = Ember.getOwner(this);
 
         return owner.lookup('service:fastboot');
+    }),
+
+    didUpdateAttrs: diffAttrs('isVisible', 'aspectRatio', function(changedAttrs, ...args) {
+        this._super(...args);
+
+        if (changedAttrs) {
+            const {
+                isVisible,
+                aspectRatio
+            } = changedAttrs;
+
+            /*
+            Resize when isVisible is true.
+             */
+            if (isVisible) {
+                const [oldIsVisible, newIsVisible] = isVisible;
+
+                if (newIsVisible && oldIsVisible !== newIsVisible) {
+                    this.scheduleOnceResize();
+                }
+            }
+
+            /*
+            Resize when aspectRatio changes.
+             */
+            if (aspectRatio) {
+                const [oldAspectRatio, newAspectRatio] = aspectRatio;
+
+                if (oldAspectRatio !== newAspectRatio) {
+                    this.scheduleOnceResize();
+                }
+            }
+        }
     }),
 
     didInsertElement() {
@@ -106,7 +142,7 @@ export default Ember.Component.extend({
         vis.logLevel(vg[logLevel || 'Warn']);
         vis.renderer(rendererType);
         vis.hover();
-        vis.run();
+        this.visRun(vis);
 
         this.set('vis', vis);
 
@@ -136,15 +172,35 @@ export default Ember.Component.extend({
         return this._super(...arguments);
     },
 
+    visRun(vis, encode) {
+        let {
+            isDestroyed,
+            isDestroying,
+            isVisible
+        } = getProperties(this, 'isDestroyed', 'isDestroying', 'isVisible');
+
+        isVisible = isVisible !== false;
+
+        if (vis && (!isDestroyed || !isDestroying) && isVisible) {
+            vis.run(encode);
+        }
+    },
+
     windowResize() {
-        // Only resize if isResizable.
-        if (get(this, 'isResizable')) {
+        let {
+            isVisible,
+            isResizable
+        } = getProperties(this, 'isVisible', 'isResizable');
+
+        isVisible = isVisible !== false;
+
+        if (isVisible && isResizable) {
             const vis = get(this, 'vis');
 
             if (vis) {
                 // TODO: Check subtract height and width from padding before setting?
                 this._sizeVis(vis);
-                vis.run('enter');
+                this.visRun(vis, 'enter');
             }
         }
 
@@ -212,14 +268,5 @@ export default Ember.Component.extend({
         if (!get(this, 'fastboot')) {
             $(window).off('resize', this._onWindowResize);
         }
-    },
-
-    /**
-     * Re-size the vis if aspectRatio changes.
-     */
-    _observeDimensions: observer('aspectRatio', function(){
-        this.scheduleOnceResize();
-
-        return this;
-    }),
+    }
 });
