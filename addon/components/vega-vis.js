@@ -155,7 +155,7 @@ export default Ember.Component.extend({
         run.scheduleOnce('afterRender', this, 'windowResize');
 
         return this;
-    }
+    },
 
     _invokeEventMethod(method, events) {
         const vis = get(this, 'vis');
