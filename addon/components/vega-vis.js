@@ -5,7 +5,6 @@ import { run } from '@ember/runloop';
 import { isArray } from '@ember/array';
 import { assert } from '@ember/debug';
 import {
-  observer,
   computed,
   getProperties,
   get
