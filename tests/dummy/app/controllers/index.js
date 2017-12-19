@@ -1,6 +1,7 @@
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
+export default Controller.extend({
     // spec: Ember.computed(function() {
     //     return {
     //         'width': 400,
@@ -87,7 +88,7 @@ export default Ember.Controller.extend({
     //         values: data
     //     }];
     // }),
-    spec: Ember.computed(function() {
+    spec: computed(function() {
         return {
             "width": 100,
             "height": 270,
@@ -298,7 +299,7 @@ export default Ember.Controller.extend({
         };
     }),
 
-    data: Ember.computed(function() {
+    data: computed(function() {
         return [{
             "name": "summaryData",
             "values": [{

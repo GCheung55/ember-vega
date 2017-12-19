@@ -1,21 +1,21 @@
-import Ember from 'ember';
+import { getOwner } from '@ember/application';
+import Component from '@ember/component';
+import $ from 'jquery';
+import { run } from '@ember/runloop';
+import { isArray } from '@ember/array';
+import { assert } from '@ember/debug';
+import {
+  observer,
+  computed,
+  getProperties,
+  get
+} from '@ember/object';
+import { isPresent } from '@ember/utils';
 import vg from 'vega';
 import layout from '../templates/components/vega-vis';
 import diffAttrs from 'ember-diff-attrs';
 
-const {
-    get,
-    getProperties,
-    computed,
-    $,
-    run,
-    isArray,
-    assert,
-    observer,
-    isPresent
-} = Ember;
-
-export default Ember.Component.extend({
+export default Component.extend({
     classNames: ['vega-vis'],
 
     layout,
@@ -47,7 +47,7 @@ export default Ember.Component.extend({
     signalEvents: null,
 
     fastboot: computed(function() {
-        let owner = Ember.getOwner(this);
+        let owner = getOwner(this);
 
         return owner.lookup('service:fastboot');
     }),
