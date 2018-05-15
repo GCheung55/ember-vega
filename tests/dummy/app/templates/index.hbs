@@ -1,5 +1,6 @@
 <div class="example">
     {{vega-vis
+        vis=vis
         data=data
         spec=spec
         events=(hash
@@ -8,6 +9,7 @@
         signalEvents=(hash
             width=(action "widthSignalHandler")
         )
+        onParseError=(action "parseError")
     }}
 </div>
 

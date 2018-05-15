@@ -5,9 +5,19 @@ export default Controller.extend({
     spec: computed(function() {
         return {
             "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-            "width": 400,
-            "height": 200,
             "padding": 5,
+            "autosize": {
+                "type": "fit",
+                // "resize": true,
+                "contains": "padding"
+            },
+
+            "data": [
+                {
+                    "name": "table",
+                    "values": []
+                }
+            ],
 
             "signals": [
                 {
@@ -17,6 +27,24 @@ export default Controller.extend({
                         {"events": "rect:mouseover", "update": "datum"},
                         {"events": "rect:mouseout",  "update": "{}"}
                     ]
+                },
+
+                {
+                    "name": "width",
+                    "update": "(containerSize()[0] || 400) - ((padding.left + padding.right) * 1)",
+                    "on": [{
+                        "events": {"source": "window", "type": "resize"},
+                        "update": "containerSize()[0] - ((padding.left + padding.right) * 1)"
+                    }]
+                },
+
+                {
+                    "name": "height",
+                    "update": "(containerSize()[1] || 200) - ((padding.top + padding.bottom) * 1)",
+                    "on": [{
+                        "events": {"source": "window", "type": "resize"},
+                        "update": "containerSize()[1] - ((padding.top + padding.bottom) * 1)"
+                    }]
                 }
             ],
 
@@ -38,7 +66,14 @@ export default Controller.extend({
             ],
 
             "axes": [
-                { "orient": "bottom", "scale": "xscale" },
+                {
+                    "orient": "bottom",
+                    "scale": "xscale",
+                    "offset": {
+                        "signal": "-5 * (padding.top + padding.bottom)"
+                    },
+                    "zindex": 1
+                },
                 { "orient": "left", "scale": "yscale" }
             ],
 
@@ -47,13 +82,11 @@ export default Controller.extend({
                     "type": "rect",
                     "from": {"data":"table"},
                     "encode": {
-                        "enter": {
+                        "update": {
                             "x": {"scale": "xscale", "field": "category"},
                             "width": {"scale": "xscale", "band": 1},
                             "y": {"scale": "yscale", "field": "amount"},
-                            "y2": {"scale": "yscale", "value": 0}
-                        },
-                        "update": {
+                            "y2": {"scale": "yscale", "value": 0},
                             "fill": {"value": "steelblue"}
                         },
                         "hover": {
@@ -64,12 +97,10 @@ export default Controller.extend({
                 {
                     "type": "text",
                     "encode": {
-                        "enter": {
+                        "update": {
                             "align": {"value": "center"},
                             "baseline": {"value": "bottom"},
-                            "fill": {"value": "#333"}
-                        },
-                        "update": {
+                            "fill": {"value": "#333"},
                             "x": {"scale": "xscale", "signal": "tooltip.category", "band": 0.5},
                             "y": {"scale": "yscale", "signal": "tooltip.amount", "offset": -2},
                             "text": {"signal": "tooltip.amount"},
@@ -85,21 +116,18 @@ export default Controller.extend({
     }),
 
     data: computed(function() {
-        return [
-            {
-                "name": "table",
-                "values": [
-                    {"category": "A", "amount": 28},
-                    {"category": "B", "amount": 55},
-                    {"category": "C", "amount": 43},
-                    {"category": "D", "amount": 91},
-                    {"category": "E", "amount": 81},
-                    {"category": "F", "amount": 53},
-                    {"category": "G", "amount": 19},
-                    {"category": "H", "amount": 87}
-                ]
-            }
-        ];
+        return {
+            "table": [
+                {"category": "A", "amount": 28},
+                {"category": "B", "amount": 55},
+                {"category": "C", "amount": 43},
+                {"category": "D", "amount": 91},
+                {"category": "E", "amount": 81},
+                {"category": "F", "amount": 53},
+                {"category": "G", "amount": 19},
+                {"category": "H", "amount": 87}
+            ]
+        };
     }),
 
     actions: {
@@ -109,6 +137,10 @@ export default Controller.extend({
 
         widthSignalHandler(name, item) {
             console.log('width', name, item);
+        },
+
+        parseError(error) {
+            console.log('error', error);
         }
     }
 });

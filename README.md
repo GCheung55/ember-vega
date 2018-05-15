@@ -1,14 +1,20 @@
-# [WIP] ember-vega
+[WIP] ember-vega
+==============================================================================
 
 Ember addon to use vega, a visualization grammar built on D3.js
 
 [Check Vega documentation](https://github.com/vega/vega/wiki/Documentation).
 
-## Installation
+Installation
+------------------------------------------------------------------------------
 
-* `ember install ember-vega`
+```
+ember install ember-vega
+```
 
-## Usage
+
+Usage
+------------------------------------------------------------------------------
 
 Components coming soon!
 
@@ -18,25 +24,34 @@ Access `vega` package:
 import vega from 'vega';
 ```
 
-## Contribute
+Contributing
+------------------------------------------------------------------------------
 
-* `git clone <repository-url>` this repository
+### Installation
+
+* `git clone https://github.com/GCheung55/ember-vega.git`
 * `cd ember-vega`
 * `npm install`
 
-## Running
+### Linting
+
+* `npm run lint:js`
+* `npm run lint:js -- --fix`
+
+### Running tests
+
+* `ember test` – Runs the test suite on the current Ember version
+* `ember test --server` – Runs the test suite in "watch mode"
+* `npm test` – Runs `ember try:each` to test your addon against multiple Ember versions
+
+### Running the dummy application
 
 * `ember serve`
-* Visit your app at [http://localhost:4200](http://localhost:4200).
-
-## Running Tests
-
-* `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
-* `ember test`
-* `ember test --server`
-
-## Building
-
-* `ember build`
+* Visit the dummy application at [http://localhost:4200](http://localhost:4200).
 
 For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
+
+License
+------------------------------------------------------------------------------
+
+This project is licensed under the [MIT License](LICENSE.md).
