@@ -25,7 +25,7 @@ module.exports = {
 
     afterInstall: function(options) {
         var checker = new VersionChecker(this);
-        var packageNames = ['vega'];
+        var packageNames = ['vega-lib'];
         var packages = packageNames.map(function(name) {
             var satisfiesVersionCheck = checker.for(name, 'npm').satisfies(devDependencies[name]);
 

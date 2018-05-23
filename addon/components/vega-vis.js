@@ -146,13 +146,13 @@ export default Component.extend({
      * Method to execute when a new visualziation has been created.
      * @param {object} vis The visualization view object.
      */
-    onNewVis(vis) {},
+    onNewVis(vis) {}, // eslint-disable-line no-unused-vars
 
     /**
      * Method to execute when creating a visualization throws an error.
      * @param {object} error The error that was thrown.
      */
-    onParseError(error) {},
+    onParseError(error) {}, // eslint-disable-line no-unused-vars
 
     /**
      * Render Vega visualization with `svg` or `canvas`.

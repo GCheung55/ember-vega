@@ -51,7 +51,16 @@ module.exports = {
             trees.push(tree);
         }
 
-        const vegaPath = path.dirname(require.resolve('vega'));
+        let resolvedPath;
+
+        try {
+            resolvedPath = require.resolve('vega');
+            this.ui.writeDeprecateLine('`vega` dependency was found. Use `vega-lib`, which excludes `node-canvas` dependencies to remove compilation steps and associated overhead.');
+        } catch (e) {
+            resolvedPath = require.resolve('vega-lib');
+        }
+
+        const vegaPath = path.dirname(resolvedPath);
         const vegaTree = new Funnel(vegaPath, {
             destDir: 'vega'
         });

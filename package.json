@@ -55,7 +55,7 @@
     "eslint-plugin-ember": "^5.0.0",
     "eslint-plugin-node": "^6.0.1",
     "loader.js": "^4.2.3",
-    "vega": "^3.2.1"
+    "vega-lib": "^3.3.1"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"

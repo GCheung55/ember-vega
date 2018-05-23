@@ -5,12 +5,8 @@ export default Controller.extend({
     spec: computed(function() {
         return {
             "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+            "autosize": "fit",
             "padding": 5,
-            "autosize": {
-                "type": "fit",
-                // "resize": true,
-                "contains": "padding"
-            },
 
             "data": [
                 {
@@ -31,19 +27,19 @@ export default Controller.extend({
 
                 {
                     "name": "width",
-                    "update": "(containerSize()[0] || 400) - ((padding.left + padding.right) * 1)",
+                    "update": "(containerSize()[0] || 400) - (padding.left + padding.right)",
                     "on": [{
                         "events": {"source": "window", "type": "resize"},
-                        "update": "containerSize()[0] - ((padding.left + padding.right) * 1)"
+                        "update": "containerSize()[0] - (padding.left + padding.right)"
                     }]
                 },
 
                 {
                     "name": "height",
-                    "update": "(containerSize()[1] || 200) - ((padding.top + padding.bottom) * 1)",
+                    "update": "(containerSize()[1] || 200) - (padding.top + padding.bottom)",
                     "on": [{
                         "events": {"source": "window", "type": "resize"},
-                        "update": "containerSize()[1] - ((padding.top + padding.bottom) * 1)"
+                        "update": "containerSize()[1] - (padding.top + padding.bottom)"
                     }]
                 }
             ],
@@ -69,9 +65,6 @@ export default Controller.extend({
                 {
                     "orient": "bottom",
                     "scale": "xscale",
-                    "offset": {
-                        "signal": "-5 * (padding.top + padding.bottom)"
-                    },
                     "zindex": 1
                 },
                 { "orient": "left", "scale": "yscale" }
