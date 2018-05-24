@@ -1,4 +1,4 @@
-import { computed } from '@ember/object';
+import { computed, set } from '@ember/object';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
@@ -123,17 +123,28 @@ export default Controller.extend({
         };
     }),
 
+    clickCount: 0,
+    widthSignal: null,
+    parseErrorObject: null,
+
     actions: {
+        // eslint-disable-next-line no-unused-vars
         clickEventHandler(event, item) {
-            console.log('clicked', event, item);
+            this.incrementProperty('clickCount');
         },
 
+        // eslint-disable-next-line no-unused-vars
         widthSignalHandler(name, item) {
-            console.log('width', name, item);
+            set(this, 'widthSignal', item);
+        },
+
+        // eslint-disable-next-line no-unused-vars
+        newVis(vis) {
+            set(this, 'parseErrorObject', null);
         },
 
         parseError(error) {
-            console.log('error', error);
+            set(this, 'parseErrorObject', error);
         }
     }
 });

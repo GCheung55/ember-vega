@@ -10,7 +10,13 @@
             width=(action "widthSignalHandler")
         )
         onParseError=(action "parseError")
+        onNewVis=(action "newVis")
     }}
 </div>
+
+<ul>
+    <li>Clicked Count: {{clickCount}}</li>
+    <li>Width Signal: {{widthSignal}}</li>
+</ul>
 
 {{outlet}}
