@@ -12,11 +12,22 @@
         onParseError=(action "parseError")
         onNewVis=(action "newVis")
     }}
+
+    <ul>
+        <li>Clicked Count: {{clickCount}}</li>
+        <li>Width Signal: {{widthSignal}}</li>
+        <li>Parse Error: {{parseErrorObject}}</li>
+    </ul>
 </div>
 
-<ul>
-    <li>Clicked Count: {{clickCount}}</li>
-    <li>Width Signal: {{widthSignal}}</li>
-</ul>
+{{#vega-vis-resize class="example" aspectRatio=4.259259259 as |dimensions|}}
+    {{vega-vis
+        vis=vis
+        data=data
+        spec=spec
+        height=dimensions.height
+        width=dimensions.width
+    }}
+{{/vega-vis-resize}}
 
 {{outlet}}

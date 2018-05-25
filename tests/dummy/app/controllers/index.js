@@ -6,7 +6,8 @@ export default Controller.extend({
         return {
             "$schema": "https://vega.github.io/schema/vega/v3.0.json",
             "autosize": "fit",
-            "padding": 5,
+            "height": 200,
+            "width": 200,
 
             "data": [
                 {
@@ -25,23 +26,23 @@ export default Controller.extend({
                     ]
                 },
 
-                {
-                    "name": "width",
-                    "update": "(containerSize()[0] || 400) - (padding.left + padding.right)",
-                    "on": [{
-                        "events": {"source": "window", "type": "resize"},
-                        "update": "containerSize()[0] - (padding.left + padding.right)"
-                    }]
-                },
-
-                {
-                    "name": "height",
-                    "update": "(containerSize()[1] || 200) - (padding.top + padding.bottom)",
-                    "on": [{
-                        "events": {"source": "window", "type": "resize"},
-                        "update": "containerSize()[1] - (padding.top + padding.bottom)"
-                    }]
-                }
+                // {
+                //     "name": "width",
+                //     "update": "(containerSize()[0] || 400) - (padding.left + padding.right)",
+                //     "on": [{
+                //         "events": {"source": "window", "type": "resize"},
+                //         "update": "containerSize()[0] - (padding.left + padding.right)"
+                //     }]
+                // },
+                //
+                // {
+                //     "name": "height",
+                //     "update": "(containerSize()[1] || 200) - (padding.top + padding.bottom)",
+                //     "on": [{
+                //         "events": {"source": "window", "type": "resize"},
+                //         "update": "containerSize()[1] - (padding.top + padding.bottom)"
+                //     }]
+                // }
             ],
 
             "scales": [

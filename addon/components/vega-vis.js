@@ -275,7 +275,8 @@ export default Component.extend({
                         }
                     }
 
-                    if (spec.data && data) {
+                    if (data) {
+                        const spec = get(this, 'spec');
                         const [oldData, newData] = data.map((dataSet) => {
                             return this._normalizeData(dataSet);
                         });
