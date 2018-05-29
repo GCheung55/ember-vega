@@ -1,4 +1,6 @@
-import { computed, set } from '@ember/object';
+import { computed, get, set } from '@ember/object';
+import { A as emberArray } from '@ember/array';
+import { changeset } from 'vega';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
@@ -109,20 +111,46 @@ export default Controller.extend({
         };
     }),
 
-    data: computed(function() {
+    dataSource: computed(function() {
+        return emberArray([
+            {"category": "A", "amount": 28},
+            {"category": "B", "amount": 55},
+            {"category": "C", "amount": 43},
+            {"category": "D", "amount": 91},
+            {"category": "E", "amount": 81},
+            {"category": "F", "amount": 53},
+            {"category": "G", "amount": 19},
+            {"category": "H", "amount": 87}
+        ]);
+    }),
+
+    data: computed('dataSource.{[],@each.amount}', function() {
+        const dataSource = get(this, 'dataSource');
         return {
-            "table": [
-                {"category": "A", "amount": 28},
-                {"category": "B", "amount": 55},
-                {"category": "C", "amount": 43},
-                {"category": "D", "amount": 91},
-                {"category": "E", "amount": 81},
-                {"category": "F", "amount": 53},
-                {"category": "G", "amount": 19},
-                {"category": "H", "amount": 87}
-            ]
+            "table": dataSource.map((datum) => ({...datum}))
         };
     }),
+
+    data2: computed('dataSource.{[],@each.amount}', function() {
+        const dataSource = get(this, 'dataSource');
+        return {
+            "table": dataSource.map((datum) => ({...datum}))
+        };
+    }),
+
+    data3: computed('dataSource.{[],@each.amount}', function() {
+        return {
+            "table": this.changeData.bind(this)
+        };
+    }),
+
+    // eslint-disable-next-line no-unused-vars
+    changeData(vis, data) {
+        const dataSource = get(this, 'dataSource');
+        const change = changeset().remove(() => true).insert(dataSource.map((datum) => ({...datum})));
+
+        vis.change('table', change);
+    },
 
     clickCount: 0,
     widthSignal: null,
@@ -146,6 +174,42 @@ export default Controller.extend({
 
         parseError(error) {
             set(this, 'parseErrorObject', error);
+        },
+
+        addData() {
+            const table = get(this, 'dataSource');
+            const lastObject = get(table, 'lastObject');
+            let obj = {
+                category: 'A',
+                amount: Math.round(Math.random() * 100)
+            };
+
+            if (lastObject) {
+                const lastCategory = lastObject.category;
+                const category = lastCategory.substring(0, lastCategory.length - 1) + String.fromCharCode(lastCategory.charCodeAt(lastCategory.length - 1) + 1);
+                obj.category = category;
+            }
+
+            table.pushObject(obj);
+        },
+
+        removeData() {
+            const table = get(this, 'dataSource');
+            const lastObject = get(table, 'lastObject');
+
+            if (lastObject) {
+                table.removeObject(lastObject);
+            }
+        },
+
+        changeData() {
+            const table = get(this, 'dataSource');
+            const lastObject = get(table, 'lastObject');
+
+            if (lastObject) {
+                const amount = Math.round(Math.random() * 100);
+                set(lastObject, 'amount', amount);
+            }
         }
     }
 });

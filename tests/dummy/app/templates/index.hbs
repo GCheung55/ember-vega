@@ -1,6 +1,5 @@
 <div class="example">
     {{vega-vis
-        vis=vis
         data=data
         spec=spec
         events=(hash
@@ -20,14 +19,22 @@
     </ul>
 </div>
 
-{{#vega-vis-resize class="example" aspectRatio=4.259259259 as |dimensions|}}
+{{#vega-vis-resize class="example" as |dimensions|}}
     {{vega-vis
-        vis=vis
-        data=data
+        data=data2
         spec=spec
-        height=dimensions.height
+        height=(div dimensions.width 4.259259259)
         width=dimensions.width
     }}
 {{/vega-vis-resize}}
+
+{{vega-vis
+    data=data3
+    spec=spec
+}}
+
+<button {{action "addData"}}>Add Data</button>
+<button {{action "removeData"}}>Remove Data</button>
+<button {{action "changeData"}}>Change Data</button>
 
 {{outlet}}

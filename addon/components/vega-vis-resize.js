@@ -9,31 +9,16 @@ export default Component.extend({
 
     classNames: [ 'vega-vis-resize' ],
 
-    aspectRatio: 1,
-
     dimensions: computed(function() {
         return this.computeComponentDimensions();
     }),
 
     fastboot: computed(function() {
-        let owner = getOwner(this);
-
-        return owner.lookup('service:fastboot');
+        return getOwner(this).lookup('service:fastboot');
     }),
 
     computeComponentDimensions() {
-        const aspectRatio = get(this, 'aspectRatio');
-        let {
-            width,
-            height
-        } = this.element.getBoundingClientRect();
-
-        height = width / aspectRatio;
-
-        return {
-            width,
-            height
-        }
+        return this.element.getBoundingClientRect();
     },
 
     recomputeComponentDimensions() {
@@ -48,7 +33,7 @@ export default Component.extend({
         if (!get(this, 'fastboot')) {
             this._windowResize = () => {
                 scheduleOnce('afterRender', this, 'recomputeComponentDimensions');
-            }
+            };
 
             window.addEventListener('resize', this._windowResize);
         }

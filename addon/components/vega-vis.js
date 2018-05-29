@@ -1,11 +1,13 @@
 import { getOwner } from '@ember/application';
 import Component from '@ember/component';
 import { computed, getProperties, get, set } from '@ember/object';
-import { isPresent } from '@ember/utils';
+import { isPresent, typeOf } from '@ember/utils';
 import { isArray } from '@ember/array';
-import vg from 'vega';
+import { changeset, parse, View } from 'vega';
 import layout from '../templates/components/vega-vis';
 import diffAttrs from 'ember-diff-attrs';
+
+
 
 export default Component.extend({
     classNames: [ 'vega-vis' ],
@@ -46,6 +48,15 @@ export default Component.extend({
      */
     isSameSpec(a, b) {
         return a === b || JSON.stringify(a) === JSON.stringify(b);
+    },
+
+    /**
+     * Determine if a value is a `vega-dataflow` changeset or not.
+     * @param change
+     * @returns {*|boolean}
+     */
+    isChangeSet(change) {
+        return change && change.constructor === changeset;
     },
 
     /**
@@ -127,16 +138,21 @@ export default Component.extend({
 
     /**
      * Enable hover event processing.
+     * If an object, properties `hoverSet` and `updateSet` will be passed when enabling hover event processing.
+     *
+     * ```javascript
+     * vis.hover(enableHover.hoverSet, enableHover.updateSet)
+     * ```
      *
      * https://github.com/vega/vega-view#view_hover
      *
-     * @type {boolean}
+     * @type {boolean|{hoverSet: string=, updateSet: string=}}
      */
     enableHover: true,
 
     /**
      * KV pairs of dataset name and array of values.
-     * @returns {object}
+     * @returns {object.<string, (array|function)>}
      */
     data: computed(function() {
         return {};
@@ -191,16 +207,14 @@ export default Component.extend({
      * @returns {object|undefined}
      */
     fastboot: computed(function() {
-        let owner = getOwner(this);
-
-        return owner.lookup('service:fastboot');
+        return getOwner(this).lookup('service:fastboot');
     }),
 
     /**
      * Updates visualization due to attr changes.
      * If the spec changes, the old visualization will be removed and a whole new visualization will be created.
      */
-    didUpdateAttrs: diffAttrs('spec', 'width', 'height', 'rendererType', 'logLevel', 'background', 'padding', 'data', 'enableHover', 'events', 'signalEvents', function(changedAttrs, ...args) {
+    didReceiveAttrs: diffAttrs('spec', 'width', 'height', 'rendererType', 'logLevel', 'background', 'padding', 'data', 'enableHover', 'events', 'signalEvents', function(changedAttrs, ...args) {
         this._super(...args);
 
         if (changedAttrs) {
@@ -218,7 +232,7 @@ export default Component.extend({
                 if (vis) {
                     const {
                         data,
-                        enableHover,
+                        // enableHover,
                         padding,
                         events,
                         signalEvents,
@@ -286,20 +300,21 @@ export default Component.extend({
                             const newDataSet = newData[d.name];
 
                             if (!this.isSameData(oldDataSet, newDataSet)) {
-                                this.updateData(d.name, newDataSet);
+                                this.updateData(vis, d.name, newDataSet);
                                 changed = true;
                             }
                         });
                     }
 
-                    if (enableHover) {
-                        const [oldEnableHover, newEnableHover] = enableHover;
-
-                        if (oldEnableHover !== newEnableHover) {
-                            vis.hover();
-                            changed = true;
-                        }
-                    }
+                    // hover API does not support disabling, so commenting out for now.
+                    // if (enableHover) {
+                    //     const [oldEnableHover, newEnableHover] = enableHover;
+                    //
+                    //     if (oldEnableHover !== newEnableHover) {
+                    //         vis.hover();
+                    //         changed = true;
+                    //     }
+                    // }
 
                     if (changed) {
                         this.visRun(vis);
@@ -346,8 +361,8 @@ export default Component.extend({
                 } = getProperties(this, 'data', 'config', 'events', 'signalEvents', 'enableHover', 'rendererType');
                 let methodArgs = getProperties(this, ...methods);
 
-                const runtime = vg.parse(spec, config);
-                const vis = new vg.View(runtime);
+                const runtime = parse(spec, config);
+                const vis = new View(runtime);
 
                 // Only initialize if not in fastboot.
                 if (!get(this, 'fastboot')) {
@@ -377,7 +392,13 @@ export default Component.extend({
                 }
 
                 if (enableHover) {
-                    vis.hover();
+                    let hoverSet, updateSet;
+
+                    if (typeOf(enableHover) === 'object') {
+                        ({hoverSet, updateSet} = enableHover);
+                    }
+
+                    vis.hover(hoverSet, updateSet);
                 }
 
                 this.visRun(vis);
@@ -433,19 +454,59 @@ export default Component.extend({
     },
 
     /**
-     * Update a dataset.
+     * Update a dataset. The value can be an array, a function, or a changeset instance.
+     *
+     * Where `value` is an array, the array of values will replace the existing dataset by creating a changeset instance.
+     *
+     * Where `value is a changeset instance, the changeset will be set on the vega instance via the `change` method.
+     *
+     * Where `value` is a function, the vega instance and current dataset "live" array will be passed as arguments. Inserting
+     * and removing of data in the changeset, and setting the changeset on the vega instance will be the responsibility
+     * of the function. Refer to the documentation below for helper methods for inserting, removing, or changing data.
+     *
+     * `vega.change` https://github.com/vega/vega-view#view_change
+     * `vega.insert` https://github.com/vega/vega-view#view_insert
+     * `vega.remove` https://github.com/vega/vega-view#view_remove
+     *
+     * An example of the function, removing odd-numbered indexed datum:
+     *
+     * ```javascript
+     * // component.js
+     *
+     * myData(vis, data, changeset) {
+     *     changeset.remove((datum) => datum.id % 2 === 0);
+     *     vis.change('my-data', changeset);
+     * },
+     *
+     * data: computed(function() {
+     *     return {
+     *         'my-data': this.myData.bind(this)
+     *     }
+     * })
+     *
+     * ```
+     *
+     * ```html
+     * {{vega-vis spec=spec data=myData}}
+     * ```
+     *
      * @param {object} vis
      * @param {string} name name of dataset
-     * @param {function|array} value A function that accepts a changeset or an array of values.
+     * @param {function|array|object} value A function that accepts a changeset, an array of values, or a changeset instance.
      */
     updateData(vis, name, value) {
         if (vis) {
             if (value) {
                 if (typeof value === 'function') {
-                    value(vis.data(name));
+                    value(vis, vis.data(name));
                 } else {
-                    const changeset = vg.changeset().remove(() => true).insert(value);
-                    vis.change(name, changeset);
+
+                    // If the value isn't a change set,
+                    if (!this.isChangeSet(value)) {
+                        value = changeset().remove(() => true).insert(value);
+                    }
+
+                    vis.change(name, value);
                 }
             }
         }
