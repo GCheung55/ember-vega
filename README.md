@@ -1,9 +1,9 @@
 ember-vega
 ==============================================================================
 
-Ember addon to use vega, a visualization grammar built on D3.js
+Ember addon to use Vega, a visualization grammar built on D3.js
 
-[Check Vega documentation](https://github.com/vega/vega/wiki/Documentation).
+Works with Vega 3: [Vega Documentation](https://vega.github.io/vega/docs/).
 
 Installation
 ------------------------------------------------------------------------------
