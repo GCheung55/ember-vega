@@ -3,9 +3,10 @@ import { setupRenderingTest } from 'ember-qunit';
 import { setupSinonSandbox } from 'ember-sinon-sandbox/test-support';
 import { clearRender, render, triggerEvent, settled } from '@ember/test-helpers';
 import { get, set } from '@ember/object';
+import { run } from '@ember/runloop';
 import hbs from 'htmlbars-inline-precompile';
 
-module('Integration | Component | vega-vis-resize', function (hooks) {
+module('Integration | Component | vega-vis-container-dimensions', function (hooks) {
     setupRenderingTest(hooks);
     setupSinonSandbox(hooks);
 
@@ -36,9 +37,12 @@ module('Integration | Component | vega-vis-resize', function (hooks) {
 
         await render(hbs`{{#vega-vis-container-dimensions dimensions=dummyDimensions as |dimensions|}}{{/vega-vis-container-dimensions}}`);
 
-        // Set dummyDimensions to null to know that it changed when window resize event is triggered
-        set(this, 'dummyDimensions', null);
 
+        // Set dummyDimensions to null to know that it changed when window resize event is triggered
+        run(() => {
+            set(this, 'dummyDimensions', null);
+        });
+        
         await settled();
 
         let dummyDimensions = get(this, 'dummyDimensions');

@@ -4,13 +4,16 @@ import { setupSinonSandbox } from 'ember-sinon-sandbox/test-support';
 import { clearRender, render, find, settled } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import { get, set } from '@ember/object';
+import { run } from '@ember/runloop';
 import vega, { changeset } from 'vega';
 
 function basicAttrTest(attr, value, template, method = attr) {
     test('expected to be set on the vega instance', async function(assert) {
         const spy = this.sandbox.spy(vega.View.prototype, method);
 
-        set(this, attr, value);
+        run(() => {
+            set(this, attr, value);
+        });
 
         await render(template);
 
@@ -22,13 +25,17 @@ function basicChangeAttrTest(attr, oldValue, newValue, template, method = attr) 
     test('change expected to update the vega instance', async function(assert) {
         const spy = this.sandbox.spy(vega.View.prototype, method);
 
-        set(this, attr, oldValue);
+        run(() => {
+            set(this, attr, oldValue);
+        });
 
         await render(template);
 
         assert.ok(spy.calledWith(oldValue), `Expected view.${method} to be executed with ${JSON.stringify(oldValue)} param`);
 
-        set(this, attr, newValue);
+        run(() => {
+            set(this, attr, newValue);
+        });
 
         await settled();
 
@@ -41,7 +48,9 @@ function basicEventTypeAttrTest(attr, value, template, method = attr) {
         const spy = this.sandbox.spy(vega.View.prototype, method);
         const keys = Object.keys(value);
 
-        set(this, attr, value);
+        run(() => {
+            set(this, attr, value);
+        });
 
         await render(template);
 
@@ -58,7 +67,9 @@ function basicEventTypeChangeAttrTest(attr, oldValue, newValue, template, addMet
         const oldKeys = Object.keys(oldValue);
         const newKeys = Object.keys(newValue);
 
-        set(this, attr, oldValue);
+        run(() => {
+            set(this, attr, oldValue);
+        });
 
         await render(template);
 
@@ -66,7 +77,9 @@ function basicEventTypeChangeAttrTest(attr, oldValue, newValue, template, addMet
             assert.ok(addSpy.calledWith(key, oldValue[key]), `Expected view.${addMethod} invoked with event ${key} and respective handler`);
         });
 
-        set(this, attr, newValue);
+        run(() => {
+            set(this, attr, newValue);
+        });
 
         await settled();
 
@@ -76,7 +89,7 @@ function basicEventTypeChangeAttrTest(attr, oldValue, newValue, template, addMet
 
         newKeys.forEach((key) => {
             assert.ok(addSpy.calledWith(key, newValue[key]), `Expected view.${addMethod} invoked with new event ${key} and handler`);
-        })
+        });
     });
 }
 
@@ -147,7 +160,9 @@ module('Integration | Component | vega vis', function(hooks) {
         test('expected to be set on the vega instance', async function(assert) {
             const parseSpy = this.sandbox.spy(vega, 'parse');
             const spec = {};
-            set(this, 'spec', spec);
+            run(() => {
+                set(this, 'spec', spec);
+            });
 
             await render(hbs`{{vega-vis spec=spec}}`);
 
@@ -159,14 +174,18 @@ module('Integration | Component | vega vis', function(hooks) {
             const oldSpec = {width: 1};
             const spec = {width: 2};
             let vis;
-            set(this, 'spec', oldSpec);
+            run(() => {
+                set(this, 'spec', oldSpec);
+            });
 
             await render(hbs`{{vega-vis vis=vis spec=spec}}`);
             vis = get(this, 'vis');
 
             assert.ok(parseSpy.calledWith(oldSpec), '`parse` expected to be executed once with oldSpec');
 
-            set(this, 'spec', spec);
+            run(() => {
+                set(this, 'spec', spec);
+            });
 
             await settled();
 
@@ -226,11 +245,13 @@ module('Integration | Component | vega vis', function(hooks) {
         const template = hbs`{{vega-vis spec=spec signalEvents=signalEvents}}`;
 
         // Signals are required for signal events, otherwise a parse error will be thrown
-        set(this, 'spec', {
-            signals: [
-                { name: 'foo', value: 0 },
-                { name: 'baz', value: 0 }
-            ]
+        run(() => {
+            set(this, 'spec', {
+                signals: [
+                    { name: 'foo', value: 0 },
+                    { name: 'baz', value: 0 }
+                ]
+            });
         });
 
         basicEventTypeAttrTest('signalEvents', {
@@ -256,15 +277,19 @@ module('Integration | Component | vega vis', function(hooks) {
             const matchChangeset = this.sandbox.match.has('constructor', changeset);
             let vis;
 
-            set(this, 'spec', {
-                data: [
-                    { name: 'foo' },
-                    { name: 'bar' },
-                    { name: 'baz' }
-                ]
+            run(() => {
+                set(this, 'spec', {
+                    data: [
+                        { name: 'foo' },
+                        { name: 'bar' },
+                        { name: 'baz' }
+                    ]
+                });
+
+                set(this, 'data', data);
             });
 
-            set(this, 'data', data);
+
 
             await render(hbs`{{vega-vis vis=vis spec=spec data=data}}`);
 
@@ -302,12 +327,14 @@ module('Integration | Component | vega vis', function(hooks) {
             assert.equal(bazData.length, 1, 'Expected baz data to contain one item');
             assert.equal(bazData[0].data, 3, 'Expected baz data to match');
 
-            set(this, 'data', {
-                foo: [4],
-                bar(vis, data, change) {
-                    vis.change('bar', change.remove(data));
-                },
-                baz: changeset().insert([5])
+            run(() => {
+                set(this, 'data', {
+                    foo: [4],
+                    bar(vis, data, change) {
+                        vis.change('bar', change.remove(data));
+                    },
+                    baz: changeset().insert([5])
+                });
             });
 
             await settled();
