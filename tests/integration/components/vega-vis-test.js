@@ -304,8 +304,8 @@ module('Integration | Component | vega vis', function(hooks) {
 
             set(this, 'data', {
                 foo: [4],
-                bar(vis, data) {
-                    vis.change('bar', changeset().remove(data));
+                bar(vis, data, change) {
+                    vis.change('bar', change.remove(data));
                 },
                 baz: changeset().insert([5])
             });

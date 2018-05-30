@@ -90,10 +90,11 @@ export default Component.extend({
     }),
 
     /**
-     * Vega visualization's width in pixels
+     * Width of the visualization in pixels. If one is not defined, the `width` defined in the spec will be used.
      *
      * Passed to `view.width` method.
      *
+     * https://vega.github.io/vega/docs/specification/
      * https://github.com/vega/vega-view#view_width
      *
      * @type {number|null}
@@ -101,11 +102,12 @@ export default Component.extend({
     width: null,
 
     /**
-     * Vega visualization height in pixels
+     * Height of the visualization in pixels. If one is not defined, the `height` defined in the spec will be used.
      *
      * Passed to `view.height` method
      *
-     * https://github.com/vega/vega-view#view_background
+     * https://vega.github.io/vega/docs/specification/
+     * https://github.com/vega/vega-view#view_height
      *
      * @type {number|null}
      */
@@ -127,6 +129,7 @@ export default Component.extend({
      *
      * Passed to `view.padding` method.
      *
+     * https://vega.github.io/vega/docs/specification/
      * https://github.com/vega/vega-view#view_padding
      *
      * @returns {{top: number, left: number, bottom: number, right: number}|null}
@@ -191,12 +194,20 @@ export default Component.extend({
 
     /**
      * Events to add to vega view instance.
+     *
+     * https://github.com/vega/vega-view/blob/master/README.md#view_addEventListener
+     * https://github.com/vega/vega-view/blob/master/README.md#view_removeEventListener
+     *
      * @type {object|null}
      */
     events: null,
 
     /**
      * Signal events to add to vega view instance.
+     *
+     * https://github.com/vega/vega-view/blob/master/README.md#view_addSignalListener
+     * https://github.com/vega/vega-view/blob/master/README.md#view_removeSignalListener
+     *
      * @type {object|null}
      */
     signalEvents: null,
@@ -460,9 +471,10 @@ export default Component.extend({
      *
      * Where `value is a changeset instance, the changeset will be set on the vega instance via the `change` method.
      *
-     * Where `value` is a function, the vega instance and current dataset "live" array will be passed as arguments. Inserting
-     * and removing of data in the changeset, and setting the changeset on the vega instance will be the responsibility
-     * of the function. Refer to the documentation below for helper methods for inserting, removing, or changing data.
+     * Where `value` is a function, the vega instance, current dataset "live" array, and a changeset instance will be
+     * passed as arguments. Inserting and removing of data in the changeset, and setting the changeset on the vega
+     * instance will be the responsibility of the function. Refer to the documentation below for helper methods for
+     * inserting, removing, or changing data.
      *
      * `vega.change` https://github.com/vega/vega-view#view_change
      * `vega.insert` https://github.com/vega/vega-view#view_insert
@@ -473,9 +485,9 @@ export default Component.extend({
      * ```javascript
      * // component.js
      *
-     * myData(vis, data, changeset) {
-     *     changeset.remove((datum) => datum.id % 2 === 0);
-     *     vis.change('my-data', changeset);
+     * myData(vis, data, change) {
+     *     change.remove((datum) => datum.id % 2 === 0);
+     *     vis.change('my-data', change);
      * },
      *
      * data: computed(function() {
@@ -498,7 +510,7 @@ export default Component.extend({
         if (vis) {
             if (value) {
                 if (typeof value === 'function') {
-                    value(vis, vis.data(name));
+                    value(vis, vis.data(name), changeset());
                 } else {
                     // If the value isn't a change set,
                     if (!this.isChangeSet(value)) {
