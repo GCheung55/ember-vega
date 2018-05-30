@@ -289,8 +289,6 @@ module('Integration | Component | vega vis', function(hooks) {
                 set(this, 'data', data);
             });
 
-
-
             await render(hbs`{{vega-vis vis=vis spec=spec data=data}}`);
 
             vis = get(this, 'vis');
@@ -345,11 +343,46 @@ module('Integration | Component | vega vis', function(hooks) {
             bazData = vis.data('baz');
 
             assert.equal(fooData.length, 1, 'Expected changed foo data to contain one item');
-            assert.equal(fooData[0].data, 4);
+            assert.equal(fooData[0].data, 4, 'Expected first item in foo data to match');
             assert.equal(barData.length, 0, 'Expected changed bar data to contain zero items');
             assert.equal(bazData[0].data, 3, 'Expected first item in baz data to match');
             assert.equal(bazData[1].data, 5, 'Expected second item in baz data to match');
             assert.equal(bazData.length, 2, 'Expected changed baz data to contain two items');
+        });
+
+        test('support array of datasets', async function(assert) {
+            const spec = {
+                data: [
+                    { name: 'foo' },
+                    { name: 'bar' },
+                    { name: 'baz' }
+                ]
+            };
+            const data = [
+                { name: 'foo', values: [1] },
+                {
+                    name: 'bar',
+                    values(vis, data, change) {
+                        change.insert([2]);
+                        vis.change('bar', change);
+                    }
+                },
+                { name: 'baz', values: changeset().insert([3])}
+            ];
+
+            set(this, 'spec', spec);
+            set(this, 'data', data);
+
+            await render(hbs`{{vega-vis vis=vis spec=spec data=data}}`);
+
+            const vis = get(this, 'vis');
+            const fooData = vis.data('foo');
+            const barData = vis.data('bar');
+            const bazData = vis.data('baz');
+
+            assert.equal(fooData[0].data, 1, 'Expected foo array data to be set');
+            assert.equal(barData[0].data, 2, 'Expected bar function to set data');
+            assert.equal(bazData[0].data, 3, 'Expected baz changeset to set data');
         });
     });
 

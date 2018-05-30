@@ -453,10 +453,10 @@ export default Component.extend({
             data = data.reduce((acc, dataSet) => {
                 const {
                     name,
-                    value
+                    values
                 } = dataSet;
 
-                acc[name] = value;
+                acc[name] = values;
                 return acc;
             }, {});
         }

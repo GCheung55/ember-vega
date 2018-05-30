@@ -79,7 +79,21 @@ Defines default visual values to set a visualization’s theme.
 
 #### data [Docs](https://vega.github.io/vega/docs/data/) (Object|Array) - Optional
 
-Data used to render the vega visualization.
+Data used to render the vega visualization. The dataset must be also defined in the spec.
+
+```javascript
+// spec
+{
+    data: [
+        { name: 'foo'}    
+    ]
+}
+
+// data
+{
+    foo: []
+}
+```
 
 `ember-vega` supports two data structures, an array of datasets as described in the Vega docs, and a simple KV pair of dataset name and values. 
 
