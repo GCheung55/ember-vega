@@ -25,16 +25,16 @@
     "test:all": "ember try:each"
   },
   "dependencies": {
+    "broccoli-funnel": "^2.0.1",
+    "broccoli-merge-trees": "^3.0.0",
     "ember-cli-babel": "^6.12.0",
     "ember-cli-htmlbars": "^2.0.3",
     "ember-cli-htmlbars-inline-precompile": "^1.0.2",
-    "ember-diff-attrs": "0.2.1"
+    "ember-cli-version-checker": "^2.1.0"
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "broccoli-asset-rev": "^2.4.5",
-    "broccoli-funnel": "^2.0.1",
-    "broccoli-merge-trees": "^3.0.0",
     "ember-ajax": "^3.1.0",
     "ember-cli": "~3.1.4",
     "ember-cli-dependency-checker": "^2.0.0",
@@ -45,6 +45,7 @@
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^2.1.0",
     "ember-cli-update": "^0.21.4",
+    "ember-diff-attrs": "^0.2.1",
     "ember-disable-prototype-extensions": "^1.1.2",
     "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^1.0.0",

@@ -23,9 +23,10 @@ module.exports = {
     //   };
     // }
 
+    // eslint-disable-next-line no-unused-vars
     afterInstall: function(options) {
         var checker = new VersionChecker(this);
-        var packageNames = ['vega-lib'];
+        var packageNames = ['vega-lib', 'ember-diff-attrs'];
         var packages = packageNames.map(function(name) {
             var satisfiesVersionCheck = checker.for(name, 'npm').satisfies(devDependencies[name]);
 

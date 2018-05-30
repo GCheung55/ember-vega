@@ -1,4 +1,4 @@
-[WIP] ember-vega
+ember-vega
 ==============================================================================
 
 Ember addon to use vega, a visualization grammar built on D3.js
@@ -289,12 +289,12 @@ Contributing
 
 * `git clone https://github.com/GCheung55/ember-vega.git`
 * `cd ember-vega`
-* `npm install`
+* `yarn install`
 
 ### Linting
 
-* `npm run lint:js`
-* `npm run lint:js -- --fix`
+* `yarn lint:js`
+* `yarn lint:js --fix`
 
 ### Running tests
 
