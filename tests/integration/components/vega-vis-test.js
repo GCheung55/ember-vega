@@ -223,8 +223,37 @@ module('Integration | Component | vega vis', function(hooks) {
     module('logLevel attr', function() {
         const template = hbs`{{vega-vis spec=spec logLevel=logLevel}}`;
 
-        basicAttrTest('logLevel', 'None', template);
-        basicChangeAttrTest('logLevel', 'Warn', 'None', template);
+        test('expected to lookup log level and set on vega instance', async function(assert) {
+            const spy = this.sandbox.spy(vega.View.prototype, 'logLevel');
+
+            run(() => {
+                set(this, 'logLevel', 'Warn');
+            });
+
+            await render(template);
+
+            assert.ok(spy.calledWith(vega.Warn), 'Expected view.logLevel to be executed with vega.Warn param');
+        });
+
+        test('change expected to update the vega instance with looked up log level', async function(assert) {
+            const spy = this.sandbox.spy(vega.View.prototype, 'logLevel');
+
+            run(() => {
+                set(this, 'logLevel', 'Warn');
+            });
+
+            await render(template);
+
+            assert.ok(spy.calledWith(vega.Warn), 'Expected view.logLevel to be executed with vega.Warn param');
+
+            run(() => {
+                set(this, 'logLevel', 'None');
+            });
+
+            await settled();
+
+            assert.ok(spy.calledWith(vega.None), 'Expected view.logLevel to be executed with vega.None param');
+        });
     });
 
     module('events attr', function() {

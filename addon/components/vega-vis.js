@@ -3,7 +3,7 @@ import Component from '@ember/component';
 import { computed, getProperties, get, set } from '@ember/object';
 import { isPresent, typeOf } from '@ember/utils';
 import { isArray } from '@ember/array';
-import { changeset, parse, View } from 'vega';
+import { changeset, parse, View, None, Error as VegaLogError, Warn, Info, Debug } from 'vega';
 import layout from '../templates/components/vega-vis';
 import diffAttrs from 'ember-diff-attrs';
 import { scheduleOnce } from '@ember/runloop';
@@ -12,6 +12,16 @@ export default Component.extend({
     classNames: [ 'vega-vis' ],
 
     layout,
+
+    LOG_LEVELS: computed(function() {
+        return {
+            None,
+            Error: VegaLogError,
+            Warn,
+            Info,
+            Debug
+        };
+    }),
 
     /**
      * Equality check between two padding objects.
@@ -249,7 +259,8 @@ export default Component.extend({
                         padding,
                         events,
                         signalEvents,
-                        rendererType
+                        rendererType,
+                        logLevel
                     } = changedAttrs;
                     let changed = false;
 
@@ -272,7 +283,6 @@ export default Component.extend({
                     [
                         'width',
                         'height',
-                        'logLevel',
                         'background'
                     ].filter((method) => {
                         return changedAttrs[method];
@@ -283,6 +293,16 @@ export default Component.extend({
                             changed = true;
                         }
                     });
+
+                    if (logLevel) {
+                        const newLogLevel = logLevel[1];
+                        const LOG_LEVELS = get(this, 'LOG_LEVELS');
+                        const foundLogLevel = LOG_LEVELS[newLogLevel];
+
+                        if (isPresent(foundLogLevel)) {
+                            vis.logLevel(foundLogLevel);
+                        }
+                    }
 
                     if (rendererType) {
                         const [oldRendererType, newRendererType] = rendererType;
@@ -358,7 +378,6 @@ export default Component.extend({
                     'width',
                     'height',
                     'padding',
-                    'logLevel',
                     'background'
                 ];
                 let {
@@ -367,8 +386,11 @@ export default Component.extend({
                     events,
                     signalEvents,
                     enableHover,
-                    rendererType
-                } = getProperties(this, 'data', 'config', 'events', 'signalEvents', 'enableHover', 'rendererType');
+                    rendererType,
+                    logLevel,
+                    LOG_LEVELS
+                } = getProperties(this, 'data', 'config', 'events', 'signalEvents', 'enableHover', 'rendererType', 'logLevel', 'LOG_LEVELS');
+                const foundLogLevel = LOG_LEVELS[logLevel];
                 let methodArgs = getProperties(this, ...methods);
 
                 const runtime = parse(spec, config);
@@ -381,6 +403,10 @@ export default Component.extend({
 
                 this.addEvents(vis, events);
                 this.addSignalEvents(vis, signalEvents);
+
+                if (isPresent(foundLogLevel)) {
+                    vis.logLevel(foundLogLevel);
+                }
 
                 methods
                     .filter((method) => {
