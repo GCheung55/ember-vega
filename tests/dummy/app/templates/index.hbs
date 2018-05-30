@@ -19,14 +19,14 @@
     </ul>
 </div>
 
-{{#vega-vis-resize class="example" as |dimensions|}}
+{{#vega-vis-container-dimensions class="example" as |dimensions|}}
     {{vega-vis
         data=data2
         spec=spec
         height=(div dimensions.width 4.259259259)
         width=dimensions.width
     }}
-{{/vega-vis-resize}}
+{{/vega-vis-container-dimensions}}
 
 {{vega-vis
     data=data3

@@ -6,8 +6,7 @@ import { isArray } from '@ember/array';
 import { changeset, parse, View } from 'vega';
 import layout from '../templates/components/vega-vis';
 import diffAttrs from 'ember-diff-attrs';
-
-
+import { scheduleOnce } from '@ember/runloop';
 
 export default Component.extend({
     classNames: [ 'vega-vis' ],
@@ -219,16 +218,19 @@ export default Component.extend({
 
         if (changedAttrs) {
             const { spec } = changedAttrs;
+            const vis = get(this, 'vis');
 
             if (spec) {
                 const [oldSpec, newSpec] = spec;
                 if (!this.isSameSpec(oldSpec, newSpec)) {
-                    this.clearView();
-                    this.createView(newSpec);
+                    // Prepare vis to be replaced by "finalizing", which cleans up events that wre attached to it.
+                    if (vis) {
+                        vis.finalize();
+                    }
+
+                    scheduleOnce('afterRender', this, 'createVis', newSpec);
                 }
             } else {
-                const vis = get(this, 'vis');
-
                 if (vis) {
                     const {
                         data,
@@ -296,8 +298,8 @@ export default Component.extend({
                         });
 
                         spec.data.map((d) => {
-                            const oldDataSet = oldData[d.name];
-                            const newDataSet = newData[d.name];
+                            const oldDataSet = oldData && oldData[d.name] || null;
+                            const newDataSet = newData && newData[d.name] || null;
 
                             if (!this.isSameData(oldDataSet, newDataSet)) {
                                 this.updateData(vis, d.name, newDataSet);
@@ -327,21 +329,18 @@ export default Component.extend({
     /**
      * Executes creation of visualization.
      * @override
-     * @returns {*}
      */
     didInsertElement() {
-        this.createVis();
+        this._super(...arguments);
 
-        return this._super(...arguments);
+        scheduleOnce('afterRender', this, 'createVis', get(this, 'spec'));
     },
 
     /**
      * Creates a visualization from the spec and attrs.
      * Thrown errors will clear the visualization and execute `onParseError`
      */
-    createVis() {
-        const spec = get(this, 'spec');
-
+    createVis(spec) {
         if (spec) {
             try {
                 const methods = [
@@ -408,7 +407,8 @@ export default Component.extend({
                 this.onNewVis(vis);
 
             } catch(e) {
-                this.clearVis();
+                scheduleOnce('destroy', this, 'clearVis');
+
                 this.onParseError(e);
             }
         }
@@ -500,7 +500,6 @@ export default Component.extend({
                 if (typeof value === 'function') {
                     value(vis, vis.data(name));
                 } else {
-
                     // If the value isn't a change set,
                     if (!this.isChangeSet(value)) {
                         value = changeset().remove(() => true).insert(value);
@@ -518,9 +517,9 @@ export default Component.extend({
      * @returns {*}
      */
     willDestroyElement() {
-        this.clearVis();
+        this._super(...arguments);
 
-        return this._super(...arguments);
+        scheduleOnce('destroy', this, 'clearVis');
     },
 
     /**

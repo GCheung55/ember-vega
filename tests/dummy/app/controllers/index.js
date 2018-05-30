@@ -147,9 +147,13 @@ export default Controller.extend({
     // eslint-disable-next-line no-unused-vars
     changeData(vis, data) {
         const dataSource = get(this, 'dataSource');
-        const change = changeset().remove(() => true).insert(dataSource.map((datum) => ({...datum})));
 
-        vis.change('table', change);
+        if (dataSource.length !== 0) {
+            const change = changeset().remove(() => true).insert(dataSource.map((datum) => ({...datum})));
+            vis.change('table', change);
+        } else {
+            vis.change('table', changeset().remove(data));
+        }
     },
 
     clickCount: 0,
