@@ -8,7 +8,33 @@
         signalEvents=(hash
             width=(action "widthSignalHandler")
         )
+        onParseError=(action "parseError")
+        onNewVis=(action "newVis")
     }}
+
+    <ul>
+        <li>Clicked Count: {{clickCount}}</li>
+        <li>Width Signal: {{widthSignal}}</li>
+        <li>Parse Error: {{parseErrorObject}}</li>
+    </ul>
 </div>
+
+{{#vega-vis-container-dimensions class="example" as |dimensions|}}
+    {{vega-vis
+        data=data2
+        spec=spec
+        height=(div dimensions.width 4.259259259)
+        width=dimensions.width
+    }}
+{{/vega-vis-container-dimensions}}
+
+{{vega-vis
+    data=data3
+    spec=spec
+}}
+
+<button {{action "addData"}}>Add Data</button>
+<button {{action "removeData"}}>Remove Data</button>
+<button {{action "changeData"}}>Change Data</button>
 
 {{outlet}}

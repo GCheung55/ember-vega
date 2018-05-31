@@ -1,14 +1,13 @@
-/* eslint-env node */
 'use strict';
 
-var path = require('path');
-var Funnel = require('broccoli-funnel');
-var mergeTrees = require('broccoli-merge-trees');
+const path = require('path');
+const Funnel = require('broccoli-funnel');
+const mergeTrees = require('broccoli-merge-trees');
 
 // Taken from https://github.com/ef4/ember-browserify/blob/cea390845f15e70eedbe8530ed12f04126928459/lib/index.js
 function findHost() {
-    var current = this;
-    var app;
+    let current = this;
+    let app;
 
     // Keep iterating upward until we don't have a grandparent.
     // Has to do this grandparent check because at some point we hit the project.
@@ -46,14 +45,23 @@ module.exports = {
     },
 
     treeForVendor: function(tree) {
-        var trees = [];
+        let trees = [];
 
         if (tree) {
             trees.push(tree);
         }
 
-        var vegaPath = path.dirname(require.resolve('vega'));
-        var vegaTree = new Funnel(vegaPath, {
+        let resolvedPath;
+
+        try {
+            resolvedPath = require.resolve('vega');
+            this.ui.writeDeprecateLine('`vega` dependency was found. Use `vega-lib`, which excludes `node-canvas` dependencies to remove compilation steps and associated overhead.');
+        } catch (e) {
+            resolvedPath = require.resolve('vega-lib');
+        }
+
+        const vegaPath = path.dirname(resolvedPath);
+        const vegaTree = new Funnel(vegaPath, {
             destDir: 'vega'
         });
 
