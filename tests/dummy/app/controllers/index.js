@@ -8,8 +8,6 @@ export default Controller.extend({
         return {
             "$schema": "https://vega.github.io/schema/vega/v3.0.json",
             "autosize": "fit",
-            "height": 200,
-            "width": 200,
 
             "data": [
                 {
