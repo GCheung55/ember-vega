@@ -17,7 +17,9 @@ module('Integration | Component | vega-vis-container-dimensions', function (hook
 
         const _windowResize = get(this, '_windowResize');
 
-        assert.ok(spy.calledOnceWith('resize', _windowResize));
+        assert.ok(spy.calledTwice, 'expected addEventListner to be called twice');
+        assert.ok(spy.calledWith('resize', _windowResize), 'expected addEventListener to be called with resize event and handler');
+        assert.ok(spy.calledWith('orientationchange', _windowResize), 'expected addEventListener to be called with orientationchange event and handler');
     });
 
     test('destroying component removes resize event listener', async function(assert) {
@@ -29,7 +31,9 @@ module('Integration | Component | vega-vis-container-dimensions', function (hook
 
         await clearRender();
 
-        assert.ok(spy.calledOnceWith('resize', _windowResize));
+        assert.ok(spy.calledTwice, 'expected removeEventListner to be called twice');
+        assert.ok(spy.calledWith('resize', _windowResize), 'expected removeEventListner to be called with resize event and handler');
+        assert.ok(spy.calledWith('orientationchange', _windowResize), 'expected removeEventListner to be called with orientationchange event and handler');
     });
 
     test('window resize event sets dimensions attr', async function(assert) {
@@ -42,7 +46,7 @@ module('Integration | Component | vega-vis-container-dimensions', function (hook
         run(() => {
             set(this, 'dummyDimensions', null);
         });
-        
+
         await settled();
 
         let dummyDimensions = get(this, 'dummyDimensions');

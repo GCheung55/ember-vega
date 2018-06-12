@@ -1,9 +1,11 @@
-import { computed, get, set } from '@ember/object';
-import { A as emberArray } from '@ember/array';
-import Controller from '@ember/controller';
-import { debounce } from '@ember/runloop';
+import Component from '@ember/component';
+import layout from '../templates/components/vega-vis-demo-base';
+import { computed } from '@ember/object';
 
-export default Controller.extend({
+export default Component.extend({
+    layout,
+
+    // BEGIN-SNIPPET vega-vis-demo-spec.js
     spec: computed(function() {
         return {
             "$schema": "https://vega.github.io/schema/vega/v3.0.json",
@@ -26,25 +28,7 @@ export default Controller.extend({
                         {"events": "rect:mouseover", "update": "datum"},
                         {"events": "rect:mouseout",  "update": "{}"}
                     ]
-                },
-
-                // {
-                //     "name": "width",
-                //     "update": "(containerSize()[0] || 400) - (padding.left + padding.right)",
-                //     "on": [{
-                //         "events": {"source": "window", "type": "resize"},
-                //         "update": "containerSize()[0] - (padding.left + padding.right)"
-                //     }]
-                // },
-                //
-                // {
-                //     "name": "height",
-                //     "update": "(containerSize()[1] || 200) - (padding.top + padding.bottom)",
-                //     "on": [{
-                //         "events": {"source": "window", "type": "resize"},
-                //         "update": "containerSize()[1] - (padding.top + padding.bottom)"
-                //     }]
-                // }
+                }
             ],
 
             "scales": [
@@ -110,60 +94,7 @@ export default Controller.extend({
             ]
         };
     }),
+    // END-SNIPPET
 
-    dataSource: computed(function() {
-        return emberArray([
-            {"category": "A", "amount": 28},
-            {"category": "B", "amount": 55},
-            {"category": "C", "amount": 43},
-            {"category": "D", "amount": 91},
-            {"category": "E", "amount": 81},
-            {"category": "F", "amount": 53},
-            {"category": "G", "amount": 19},
-            {"category": "H", "amount": 87}
-        ]);
-    }),
-
-    // Data in an array, used for basic demo
-    data: computed('dataSource.{[],@each.amount}', function() {
-        const dataSource = get(this, 'dataSource');
-        return {
-            "table": dataSource.map((datum) => ({...datum}))
-        };
-    }),
-
-    jsonStringSpec: computed('spec', function() {
-        return JSON.stringify(get(this, 'spec'), null, 4);
-    }),
-
-    jsonStringData: computed('dataSource', function() {
-        return JSON.stringify(get(this, 'dataSource'), null, 4);
-    }),
-
-    updateSpec(spec) {
-        try {
-            set(this, 'spec', JSON.parse(spec));
-            set(this, 'specParseError', null);
-        } catch (e) {
-            set(this, 'specParseError', e);
-        }
-    },
-
-    updateData(data) {
-        try {
-            set(this, 'dataSource',  emberArray(JSON.parse(data)));
-            set(this, 'dataParseError', null);
-        } catch (e) {
-            set(this, 'dataParseError', e);
-        }
-    },
-
-    actions: {
-        updateSpec(spec) {
-            debounce(this, 'updateSpec', spec, 300);
-        },
-        updateData(data) {
-            debounce(this, 'updateData', data, 300);
-        }
-    }
+    data: null
 });
