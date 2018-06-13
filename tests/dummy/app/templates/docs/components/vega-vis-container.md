@@ -72,6 +72,7 @@ By default, the yielded `ui.vis` will have `visContainer` set to `ui.element` an
                 {{ui.vis 
                     spec=spec
                     visContainer=ui.element
+                    height=spec.height
                     tagName=""
                 }}
             {{/vega-vis-container}}
@@ -96,6 +97,7 @@ Since `vis` is a composed component, any of the defaults can be overriden.
             {{#vega-vis-container as |ui|}}
                 {{ui.vis 
                     spec=spec
+                    height=spec.height
                 }}
             {{/vega-vis-container}}
         {{/demo.example}}
