@@ -12,7 +12,7 @@ Router.map(function() {
 
         this.route('components', function() {
             this.route('vega-vis');
-            this.route('vega-vis-container-dimensions');
+            this.route('vega-vis-container');
         });
     });
 

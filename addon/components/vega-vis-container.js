@@ -2,29 +2,32 @@ import Component from '@ember/component';
 import { computed, get, set } from '@ember/object'
 import { scheduleOnce, debounce, cancel } from '@ember/runloop';
 import { getOwner } from '@ember/application';
-import layout from '../templates/components/vega-vis-container-dimensions';
+import layout from '../templates/components/vega-vis-container';
 
 /**
  * A component for accessing the component's dimensions.
  *
  * ```hbs
- * {{#vega-vis-container-dimensions as |dimensions|}}
+ * {{#vega-vis-container as |ui|}}
  *     {{vega-vis
- *         height=(div dimensions.width 4.259259259)
- *         width=dimensions.width
+ *         height=(div ui.dimensions.width 4.259259259)
+ *         width=ui.dimensions.width
  *         spec=spec
  *         data=data
  *     }}
- * {{/vega-vis-container-dimensions}}
+ * {{/vega-vis-container}}
  * ```
  *
- * @class VegaVisContainerDimensions
- * @yield {ClientRect} dimensions
+ * @class VegaVisContainer
+ * @yield {Object} ui
+ * @yield {ClientRect} ui.dimensions
+ * @yield {Element} ui.element
+ * @yield {Ember.Component} ui.vis
  */
 export default Component.extend({
     layout,
 
-    classNames: [ 'vega-vis-container-dimensions' ],
+    classNames: [ 'vega-vis-container' ],
 
     _resizeTimer: null,
 

@@ -7,14 +7,13 @@
     <div class="mx-8">
         {{#docs-demo as |demo|}}
             {{#demo.example name='vega-vis-demo.hbs'}}
-                {{#vega-vis-container-dimensions as |ui|}}
-                    {{vega-vis
+                {{#vega-vis-container as |ui|}}
+                    {{ui.vis
                         spec=spec
                         data=data
-                        width=ui.dimensions.width
                         height=200
                     }}
-                {{/vega-vis-container-dimensions}}
+                {{/vega-vis-container}}
             {{/demo.example}}
 
             {{demo.snippet name="vega-vis-demo.hbs"}}
@@ -22,7 +21,6 @@
     </div>
 
     <div class="pt-8 mx-8">
-
         <div class="flex">
             <div class="w-1/2">
                 <strong class="block my-2">Editable spec</strong>
