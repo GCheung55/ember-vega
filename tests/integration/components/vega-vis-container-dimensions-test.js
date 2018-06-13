@@ -80,10 +80,10 @@ module('Integration | Component | vega-vis-container-dimensions', function (hook
         assert.equal(this.element.textContent.trim(), this.element.getBoundingClientRect().width, 'Expected ui.dimensions.width to match');
     });
 
-    test('yielded object has container property that is the component\'s element', async function(assert) {
+    test('yielded object has element property that is the component\'s element', async function(assert) {
         await render(hbs`
             {{#vega-vis-container-dimensions as |ui|}}
-                {{ui.container.id}}
+                {{ui.element.id}}
             {{/vega-vis-container-dimensions}}
         `);
 

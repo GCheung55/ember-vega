@@ -57,11 +57,11 @@ The example below show's width and height signals that update the when the windo
 
 If you have a `spec` that makes use of this feature, there is no need to use `vega-vis-container-dimensions` component in this scenario.
 
-## Container Property
+## Element Property
 
-With the `container` property, the `vega-vis` can render the visualization in a different element from it's own. This helps with reducing the number of elements in the DOM and can help with debugging.
+With the `element` property, the `vega-vis` can render the visualization in a different element from it's own. This helps with reducing the number of elements in the DOM and can help with debugging.
 
-Note that a `tagName` property is passed to `vega-vis`, along with the `container`. Since `vega-vis` will be rendering the visualization in a different element, setting the `tagName` to an empty string will prevent `vega-vis` from creating an element of its own.
+Note that a `tagName` property is passed to `vega-vis`, along with the `visContainer`. Since `vega-vis` will be rendering the visualization in a different element, setting the `tagName` to an empty string will prevent `vega-vis` from creating an element of its own.
 
 {{#docs-demo as |demo|}}
     {{#vega-vis-demo-basic as |spec|}}
@@ -71,7 +71,7 @@ Note that a `tagName` property is passed to `vega-vis`, along with the `containe
                     spec=spec
                     height=(div ui.dimensions.width 3)
                     width=ui.dimensions.width
-                    container=ui.container
+                    visContainer=ui.element
                     tagName=""
                 }}
             {{/vega-vis-container-dimensions}}

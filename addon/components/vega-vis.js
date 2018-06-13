@@ -354,7 +354,7 @@ export default Component.extend({
      * The visualization can be rendered in a different container if desired. This helps with reducing the number of elements.
      *
      * The example also sets the `tagName` property to an empty string, this effectively prevents `vega-vis` from creating its own element.
-     * 
+     *
      * ```hbs
      * {{#foo-thing as |element|}}
      *     {{vega-vis spec=spec container=element tagName=""}}
@@ -366,7 +366,7 @@ export default Component.extend({
      * @default {Element} The component's element.
      * @type {Element}
      */
-    container: computed(function() {
+    visContainer: computed(function() {
         return get(this, 'element');
     }),
 
@@ -534,9 +534,9 @@ export default Component.extend({
                     enableHover,
                     rendererType,
                     logLevel,
-                    container,
+                    visContainer,
                     LOG_LEVELS
-                } = getProperties(this, 'data', 'config', 'events', 'signalEvents', 'enableHover', 'rendererType', 'logLevel', 'container', 'LOG_LEVELS');
+                } = getProperties(this, 'data', 'config', 'events', 'signalEvents', 'enableHover', 'rendererType', 'logLevel', 'visContainer', 'LOG_LEVELS');
                 const foundLogLevel = LOG_LEVELS[logLevel];
                 let methodArgs = getProperties(this, ...methods);
 
@@ -545,7 +545,7 @@ export default Component.extend({
 
                 // Only initialize if not in fastboot.
                 if (!get(this, 'fastboot')) {
-                    vis.initialize(container);
+                    vis.initialize(visContainer);
                 }
 
                 this.addEvents(vis, events);
