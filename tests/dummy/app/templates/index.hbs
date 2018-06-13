@@ -1,3 +1,54 @@
+{{docs-hero
+    logo='ember'
+    strongHeading='Vega'
+    byline='Ember components with Vega, a visualization grammar built on D3.js'}}
+
+<div class="flex flex-col">
+    <div class="mx-8">
+        {{#docs-demo as |demo|}}
+            {{#demo.example name='vega-vis-demo.hbs'}}
+                {{#vega-vis-container-dimensions as |dimensions|}}
+                    {{vega-vis
+                        spec=spec
+                        data=data
+                        width=dimensions.width
+                        height=200
+                    }}
+                {{/vega-vis-container-dimensions}}
+            {{/demo.example}}
+
+            {{demo.snippet name="vega-vis-demo.hbs"}}
+        {{/docs-demo}}
+    </div>
+
+    <div class="pt-8 mx-8">
+
+        <div class="flex">
+            <div class="w-1/2">
+                <strong class="block my-2">Editable spec</strong>
+
+                {{ember-ace
+                        class="pb-8"
+                        mode="ace/mode/json"
+                        lines=20
+                        value=jsonStringSpec
+                        update=(action "updateSpec")}}
+            </div>
+
+            <div class="w-1/2">
+                <strong class="block my-2">Editable data</strong>
+
+                {{ember-ace
+                    class="pb-8"
+                    mode="ace/mode/json"
+                    lines=20
+                    value=jsonStringData
+                    update=(action "updateData")}}
+            </div>
+        </div>
+    </div>
+</div>
+{{!--
 <div class="example">
     {{vega-vis
         data=data
@@ -36,5 +87,4 @@
 <button {{action "addData"}}>Add Data</button>
 <button {{action "removeData"}}>Remove Data</button>
 <button {{action "changeData"}}>Change Data</button>
-
-{{outlet}}
+--}}

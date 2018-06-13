@@ -1,13 +1,32 @@
 import Component from '@ember/component';
 import { computed, get, set } from '@ember/object'
-import { scheduleOnce } from '@ember/runloop';
+import { scheduleOnce, debounce, cancel } from '@ember/runloop';
 import { getOwner } from '@ember/application';
 import layout from '../templates/components/vega-vis-container-dimensions';
 
+/**
+ * A component for accessing the component's dimensions.
+ *
+ * ```hbs
+ * {{#vega-vis-container-dimensions as |dimensions|}}
+ *     {{vega-vis
+ *         height=(div dimensions.width 4.259259259)
+ *         width=dimensions.width
+ *         spec=spec
+ *         data=data
+ *     }}
+ * {{/vega-vis-container-dimensions}}
+ * ```
+ *
+ * @class VegaVisContainerDimensions
+ * @yield {ClientRect} dimensions
+ */
 export default Component.extend({
     layout,
 
     classNames: [ 'vega-vis-container-dimensions' ],
+
+    _resizeTimer: null,
 
     /**
      * Dimensions of the component - return value of element.getBoundingClientRect().
@@ -16,15 +35,20 @@ export default Component.extend({
      *
      * It's useful with aspect ratios.
      *
-     * @returns {ClientRect}
+     * [MDN Docs: Element.getBoundingClientRect](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect)
+     *
+     * @computed dimensions
+     * @type {ClientRect}
      */
     dimensions: computed(function() {
         return this.computeComponentDimensions();
     }),
 
     /**
-     * Determines if the component is being rendered in Fastboot
-     * @returns {object|undefined}
+     * Determines if the component is being rendered in Fastboot.
+     *
+     * @computed fastboot
+     * @type {Object|undefined}
      */
     fastboot: computed(function() {
         return getOwner(this).lookup('service:fastboot');
@@ -32,14 +56,18 @@ export default Component.extend({
 
     /**
      * Get the return value of element.getBoundingClientRect().
-     * @returns {ClientRect}
+     *
+     * @method computeComponentDimensions
+     * @return {ClientRect}
      */
     computeComponentDimensions() {
         return this.element.getBoundingClientRect();
     },
 
     /**
-     * set the return value of element.getBoundingClientRect() as `dimensions` property.
+     * Set the return value of element.getBoundingClientRect() as `dimensions` property.
+     *
+     * @method recomputeComponentDimensions
      */
     recomputeComponentDimensions() {
         if (!this.isDestroyed || !this.isDestroying) {
@@ -48,22 +76,25 @@ export default Component.extend({
     },
 
     /**
-     * Store and set the window resize event listener.
+     * Store and set the window resize event listener and recompute the dimensions.
      *
-     * Recompute the dimensions.
-     * @override
+     * @method didInsertElement
      */
     didInsertElement() {
         this._super(...arguments);
 
         if (!get(this, 'fastboot')) {
+
             const _windowResize = () => {
-                scheduleOnce('afterRender', this, 'recomputeComponentDimensions');
+                this.resizeTimer = cancel(this.resizeTimer);
+
+                this.resizeTimer = debounce(this, scheduleOnce, 'afterRender', this, 'recomputeComponentDimensions', 50);
             };
 
             set(this, '_windowResize', _windowResize);
 
             window.addEventListener('resize', _windowResize);
+            window.addEventListener('orientationchange', _windowResize);
 
             scheduleOnce('afterRender', this, 'recomputeComponentDimensions');
         }
@@ -72,14 +103,15 @@ export default Component.extend({
     /**
      * Remove the window resize event listener.
      *
-     * @override
-     * @returns {*}
+     * @method willDestroyElement
      */
     willDestroyElement() {
         this._super(...arguments);
 
         if (!get(this, 'fastboot')) {
+            this.resizeTimer = cancel(this.resizeTimer);
             window.removeEventListener('resize', get(this, '_windowResize'));
+            window.removeEventListener('orientationchange', get(this, '_windowResize'));
         }
     }
 });

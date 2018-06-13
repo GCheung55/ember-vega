@@ -8,6 +8,32 @@ import layout from '../templates/components/vega-vis';
 import diffAttrs from 'ember-diff-attrs';
 import { scheduleOnce } from '@ember/runloop';
 
+/**
+ * A component for rendering a Vega visualization.
+ *
+ * ```hbs
+ * {{vega-vis
+ *    vis=vis
+ *    config=config
+ *    data=data
+ *    spec=spec
+ *    height=100
+ *    width=200
+ *    padding=(hash top=10 bottom=10 left=10 right=10)
+ *    background="#000"
+ *    enableHover=true
+ *    rendererType="svg"
+ *    logLevel="None"
+ *    events=(hash click=(action "click"))
+ *    signalEvents=(hash foo=(action "fooSignalChanged"))
+ *    onParseError=(action "parseError")
+ *    onNewVis=(action "newVisCreated")
+ *}}
+ * ```
+ *
+ * @class VegaVis
+ * @public
+ */
 export default Component.extend({
     classNames: [ 'vega-vis' ],
 
@@ -25,9 +51,11 @@ export default Component.extend({
 
     /**
      * Equality check between two padding objects.
-     * @param {*} a
-     * @param {*} b
-     * @returns {boolean}
+     *
+     * @method isSamePadding
+     * @param {any} a
+     * @param {any} b
+     * @return {Boolean}
      */
     isSamePadding(a, b) {
         if (isPresent(a) && isPresent(b)) {
@@ -41,9 +69,11 @@ export default Component.extend({
 
     /**
      * Simple equality check between two objects.
-     * @param {*} a
-     * @param {*} b
-     * @returns {boolean}
+     *
+     * @method isSameData
+     * @param {any} a
+     * @param {any} b
+     * @return {Boolean}
      */
     isSameData(a, b) {
         return a === b;
@@ -51,9 +81,11 @@ export default Component.extend({
 
     /**
      * Equality check by comparing two JSON.stringify'ied objects.
-     * @param {*} a
-     * @param {*} b
-     * @returns {boolean}
+     *
+     * @method isSameSpec
+     * @param {any} a
+     * @param {any} b
+     * @return {Boolean}
      */
     isSameSpec(a, b) {
         return a === b || JSON.stringify(a) === JSON.stringify(b);
@@ -61,8 +93,10 @@ export default Component.extend({
 
     /**
      * Determine if a value is a `vega-dataflow` changeset or not.
-     * @param change
-     * @returns {*|boolean}
+     *
+     * @method isChangeSet
+     * @param {Vega.Changeset} change
+     * @return {Boolean}
      */
     isChangeSet(change) {
         return change && change.constructor === changeset;
@@ -71,7 +105,11 @@ export default Component.extend({
     /**
      * Vega visualization instance.
      *
-     * @type {object|null}
+     * [Vega Docs: View](https://vega.github.io/vega/docs/api/view/)
+     *
+     * @argument vis
+     * @default null
+     * @type {Vega.View}
      */
     vis: null,
 
@@ -80,9 +118,12 @@ export default Component.extend({
      *
      * Passed to create Vega visualization's runtime.
      *
-     * https://vega.github.io/vega/docs/config/
+     * [Vega Docs: Config](https://vega.github.io/vega/docs/config/)
      *
-     * @returns {object|null}
+     * @argument config
+     * @optional
+     * @default null
+     * @type {Object}
      */
     config: null,
 
@@ -91,9 +132,12 @@ export default Component.extend({
      *
      * Used to create Vega visualization's runtime.
      *
-     * https://vega.github.io/vega/docs/specification/
+     * [Vega Docs: Specification](https://vega.github.io/vega/docs/specification/)
      *
-     * @returns {object}
+     * @argument spec
+     * @computed spec
+     * @required
+     * @type {Object}
      */
     spec: computed(function() {
         throw new Error('spec parameter is required for vega-vis');
@@ -104,10 +148,13 @@ export default Component.extend({
      *
      * Passed to `view.width` method.
      *
-     * https://vega.github.io/vega/docs/specification/
-     * https://github.com/vega/vega-view#view_width
+     * [Vega Docs: Specification](https://vega.github.io/vega/docs/specification/)
+     * [Vega Docs: View.width](https://vega.github.io/vega/docs/api/view/#view_width)
      *
-     * @type {number|null}
+     * @argument width
+     * @default null
+     * @optional
+     * @type {Number|null}
      */
     width: null,
 
@@ -116,10 +163,13 @@ export default Component.extend({
      *
      * Passed to `view.height` method
      *
-     * https://vega.github.io/vega/docs/specification/
-     * https://github.com/vega/vega-view#view_height
+     * [Vega Docs: Specification](https://vega.github.io/vega/docs/specification/)
+     * [Vega Docs: View.height](https://vega.github.io/vega/docs/api/view/#view_height)
      *
-     * @type {number|null}
+     * @argument height
+     * @default null
+     * @optional
+     * @type {Number|null}
      */
     height: null,
 
@@ -128,25 +178,33 @@ export default Component.extend({
      *
      * Passed to `view.background` method.
      *
-     * https://github.com/vega/vega-view#view_background
+     * [Vega Docs: Specification](https://vega.github.io/vega/docs/specification/)
+     * [Vega Docs: View.background](https://vega.github.io/vega/docs/api/view/#view_background)
      *
-     * @type {string|null}
+     * @argument background
+     * @default null
+     * @optional
+     * @type {String|null}
      */
     background: null,
 
     /**
-     * Vega visualization's padding in pixels
+     * Vega visualization's padding in pixels.
      *
      * Passed to `view.padding` method.
      *
-     * https://vega.github.io/vega/docs/specification/
-     * https://github.com/vega/vega-view#view_padding
+     * [Vega Docs: Specification](https://vega.github.io/vega/docs/specification/)
+     * [Vega Docs: View.padding](https://vega.github.io/vega/docs/api/view/#view_padding)
      *
-     * @returns {{top: number, left: number, bottom: number, right: number}|null}
+     * @argument padding
+     * @optional
+     * @type {Object|null}
+     * @param {Number} top
+     * @param {Number} bottom
+     * @param {Number} left
+     * @param {Number} right
      */
-    padding: computed(function() {
-        return null;
-    }),
+    padding: null,
 
     /**
      * Enable hover event processing.
@@ -156,15 +214,59 @@ export default Component.extend({
      * vis.hover(enableHover.hoverSet, enableHover.updateSet)
      * ```
      *
-     * https://github.com/vega/vega-view#view_hover
+     * [Vega Docs: View.hover](https://vega.github.io/vega/docs/api/view/#view_hover)
      *
-     * @type {boolean|{hoverSet: string=, updateSet: string=}}
+     * @argument enableHover
+     * @default true
+     * @type {Boolean|Object}
+     * @param {String} [hoverSet]
+     * @param {String} [updateSet]
      */
     enableHover: true,
 
     /**
-     * KV pairs of dataset name and array of values.
-     * @returns {object.<string, (array|function)>}
+     * KV pairs of dataset name and array of values, a changeset, or a function.
+     *
+     * Where `value` is an array, the array of values will replace the existing dataset by creating a changeset instance.
+     *
+     * Where `value is a changeset instance, the changeset will be set on the Vega.View instance via the `change` method.
+     *
+     * Where `value` is a function, the Vega.View instance, current dataset "live" array, and a changeset instance will be
+     * passed as arguments. Inserting and removing of data in the changeset, and setting the changeset on the vega
+     * instance will be the responsibility of the function. Refer to the documentation below for helper methods for
+     * inserting, removing, or changing data.
+     *
+     * [Vega Docs: View.change](https://github.com/vega/vega-view#view_change)
+     * [Vega Docs: View.insert](https://github.com/vega/vega-view#view_insert)
+     * [Vega Docs: View.remove](https://github.com/vega/vega-view#view_remove)
+     *
+     * An example of the function, removing odd-numbered indexed datum:
+     *
+     * ```javascript
+     * // component.js
+     *
+     * myData(vis, data, change) {
+     *     change.remove((datum) => datum.id % 2 === 0);
+     *     vis.change('my-data', change);
+     * },
+     *
+     * data: computed(function() {
+     *     return {
+     *         'my-data': this.myData.bind(this)
+     *     }
+     * })
+     *
+     * ```
+     *
+     * ```html
+     * {{vega-vis spec=spec data=data}}
+     * ```
+     *
+     * [Vega Docs: Data](https://vega.github.io/vega/docs/data/)
+     *
+     * @argument data
+     * @computed data
+     * @type {Object.<String, (Array|Function)>}
      */
     data: computed(function() {
         return {};
@@ -172,21 +274,29 @@ export default Component.extend({
 
     /**
      * Method to execute when a new visualziation has been created.
-     * @param {object} vis The visualization view object.
+     *
+     * @argument onNewVis
+     * @type {Function}
+     * @param {Vega.View} vis The visualization view object.
      */
     onNewVis(vis) {}, // eslint-disable-line no-unused-vars
 
     /**
      * Method to execute when creating a visualization throws an error.
-     * @param {object} error The error that was thrown.
+     *
+     * @argument onParseError
+     * @type {Function}
+     * @param {Error} error The error that was thrown.
      */
     onParseError(error) {}, // eslint-disable-line no-unused-vars
 
     /**
      * Render Vega visualization with `svg` or `canvas`.
      *
-     * https://github.com/vega/vega-view#view_renderer
+     * [Vega Docs: View.renderer](https://vega.github.io/vega/docs/api/view/#view_renderer)
      *
+     * @argument rendererType
+     * @default 'svg'
      * @type {string}
      */
     rendererType: 'svg',
@@ -196,8 +306,10 @@ export default Component.extend({
      *
      * Valid values: `None`, `Warn`, `Info`, `Debug`
      *
-     * https://github.com/vega/vega-view#view_logLevel
+     * [Vega Docs: View.logLevel](https://vega.github.io/vega/docs/api/view/#view_logLevel)
      *
+     * @argument logLevel
+     * @default 'None'
      * @type {string}
      */
     logLevel: 'None',
@@ -205,26 +317,32 @@ export default Component.extend({
     /**
      * Events to add to vega view instance.
      *
-     * https://github.com/vega/vega-view/blob/master/README.md#view_addEventListener
-     * https://github.com/vega/vega-view/blob/master/README.md#view_removeEventListener
+     * [Vega Docs: View.addEventListener](https://vega.github.io/vega/docs/api/view/#view_addEventListener)
+     * [Vega Docs: View.removeEventListener](https://vega.github.io/vega/docs/api/view/#view_removeEventListener)
      *
-     * @type {object|null}
+     * @argument events
+     * @default null
+     * @type {Object|null}
      */
     events: null,
 
     /**
      * Signal events to add to vega view instance.
      *
-     * https://github.com/vega/vega-view/blob/master/README.md#view_addSignalListener
-     * https://github.com/vega/vega-view/blob/master/README.md#view_removeSignalListener
+     * [Vega Docs: View.addSignalListener](https://vega.github.io/vega/docs/api/view/#view_addSignalListener)
+     * [Vega Docs: View.removeSignalListener](https://vega.github.io/vega/docs/api/view/#view_removeSignalListener)
      *
-     * @type {object|null}
+     * @argument signalEvents
+     * @default null
+     * @type {Object|null}
      */
     signalEvents: null,
 
     /**
-     * Determines if the component is being rendered in Fastboot
-     * @returns {object|undefined}
+     * Determines if the component is being rendered in Fastboot.
+     *
+     * @computed fastboot
+     * @type {Object|undefined}
      */
     fastboot: computed(function() {
         return getOwner(this).lookup('service:fastboot');
@@ -233,6 +351,8 @@ export default Component.extend({
     /**
      * Updates visualization due to attr changes.
      * If the spec changes, the old visualization will be removed and a whole new visualization will be created.
+     *
+     * @method didReceiveAttrs
      */
     didReceiveAttrs: diffAttrs('spec', 'width', 'height', 'rendererType', 'logLevel', 'background', 'padding', 'data', 'enableHover', 'events', 'signalEvents', function(changedAttrs, ...args) {
         this._super(...args);
@@ -359,7 +479,8 @@ export default Component.extend({
 
     /**
      * Executes creation of visualization.
-     * @override
+     *
+     * @method didInsertElement
      */
     didInsertElement() {
         this._super(...arguments);
@@ -370,6 +491,9 @@ export default Component.extend({
     /**
      * Creates a visualization from the spec and attrs.
      * Thrown errors will clear the visualization and execute `onParseError`
+     *
+     * @method createVis
+     * @param {Object} spec The specification used to create a Vega.View instance
      */
     createVis(spec) {
         if (spec) {
@@ -453,6 +577,8 @@ export default Component.extend({
 
     /**
      * Prepare the visualization to be removed.
+     *
+     * @method clearVis
      */
     clearVis() {
         const vis = get(this, 'vis');
@@ -470,9 +596,10 @@ export default Component.extend({
      *
      * In case the data is actually an array, convert it to an object.
      *
-     * @param {object|array} data
-     * @returns {object}
+     * @method _normalizeData
      * @private
+     * @param {Object|Array} data Datasets used for rendering the Vega.View instance
+     * @return {Object}
      */
     _normalizeData(data) {
         if (isArray(data)) {
@@ -495,9 +622,9 @@ export default Component.extend({
      *
      * Where `value` is an array, the array of values will replace the existing dataset by creating a changeset instance.
      *
-     * Where `value is a changeset instance, the changeset will be set on the vega instance via the `change` method.
+     * Where `value is a changeset instance, the changeset will be set on the Vega.View instance via the `change` method.
      *
-     * Where `value` is a function, the vega instance, current dataset "live" array, and a changeset instance will be
+     * Where `value` is a function, the Vega.View instance, current dataset "live" array, and a changeset instance will be
      * passed as arguments. Inserting and removing of data in the changeset, and setting the changeset on the vega
      * instance will be the responsibility of the function. Refer to the documentation below for helper methods for
      * inserting, removing, or changing data.
@@ -525,12 +652,13 @@ export default Component.extend({
      * ```
      *
      * ```html
-     * {{vega-vis spec=spec data=myData}}
+     * {{vega-vis spec=spec data=data}}
      * ```
      *
-     * @param {object} vis
-     * @param {string} name name of dataset
-     * @param {function|array|object} value A function that accepts a changeset, an array of values, or a changeset instance.
+     * @method updateData
+     * @param {Vega.View} vis
+     * @param {String} name name of dataset
+     * @param {Function|Array|Object} value A function that accepts a changeset, an array of values, or a changeset instance.
      */
     updateData(vis, name, value) {
         if (vis) {
@@ -551,8 +679,8 @@ export default Component.extend({
 
     /**
      * Remove the visualization during before the component is destroyed.
-     * @override
-     * @returns {*}
+     *
+     * @method willDestroyElement
      */
     willDestroyElement() {
         this._super(...arguments);
@@ -564,8 +692,9 @@ export default Component.extend({
      * Invoke visualization `run` method to render the visualization.
      * Will only `run` when component hasn't been destroyed or in the process of being destroyed.
      *
-     * @param {object} vis
-     * @param {string|undefined} encode
+     * @method visRun
+     * @param {Vega.View} vis Vega.View instance
+     * @param {String|undefined} encode
      */
     visRun(vis, encode) {
         let {
@@ -580,10 +709,12 @@ export default Component.extend({
 
     /**
      * Abstract method to help add/remove events/signals to the visulzation.
-     * @param {object} vis
-     * @param {string} method Name of method, such as addEventListener or removeSignalListener
-     * @param {object} events KV pairs of event/signal names and functions
+     *
+     * @method _invokeEventMethod
      * @private
+     * @param {Vega.View} vis Vega.View instance
+     * @param {String} method Name of method, such as addEventListener or removeSignalListener
+     * @param {Object} events KV pairs of event/signal names and functions
      */
     _invokeEventMethod(vis, method, events) {
         if (vis && events) {
@@ -595,45 +726,45 @@ export default Component.extend({
 
     /**
      * Adds event listeners contained in an `events` object.
-     * @param {object} vis
-     * @param {object} events KV pairs of event names and functions. https://github.com/vega/vega-view#view_addEventListener
-     * @returns {*|undefined}
-     * @private
+     *
+     * @method addEvents
+     * @param {Vega.View} vis Vega.View instance
+     * @param {Object} events KV pairs of event names and functions. https://github.com/vega/vega-view#view_addEventListener
      */
     addEvents(vis, events = {}) {
-        return this._invokeEventMethod(vis, 'addEventListener', events);
+        this._invokeEventMethod(vis, 'addEventListener', events);
     },
 
     /**
      * Removes event listeners contained in an `events` object.
-     * @param {object} vis
-     * @param {object} events KV pairs of event names and functions. https://github.com/vega/vega-view#view_removeEventListener
-     * @returns {*|undefined}
-     * @private
+     *
+     * @method removeEvents
+     * @param {Vega.View} vis Vega.View instance
+     * @param {Object} events KV pairs of event names and functions. https://github.com/vega/vega-view#view_removeEventListener
      */
     removeEvents(vis, events = {}) {
-        return this._invokeEventMethod(vis, 'removeEventListener', events);
+        this._invokeEventMethod(vis, 'removeEventListener', events);
     },
 
     /**
      * Adds signal event listeners contained in a `signalevents` object.
-     * @param {object} vis
-     * @param {object} signalEvents KV pairs of signal evnet names and functions. https://github.com/vega/vega-view#view_addSignalListener
-     * @returns {*|undefined}
-     * @private
+     *
+     * @method addSignalEvents
+     * @param {Vega.View} vis Vega.View instance
+     * @param {Object} signalEvents KV pairs of signal evnet names and functions. https://github.com/vega/vega-view#view_addSignalListener
      */
     addSignalEvents(vis, signalEvents = {}) {
-        return this._invokeEventMethod(vis, 'addSignalListener', signalEvents);
+        this._invokeEventMethod(vis, 'addSignalListener', signalEvents);
     },
 
     /**
      * Removes signal event listeners contained in a `signalevents` object.
-     * @param {object} vis
-     * @param {object} signalEvents KV pairs of signal evnet names and functions. https://github.com/vega/vega-view#view_addSignalListener
-     * @returns {*|undefined}
-     * @private
+     *
+     * @method removeSignalEvents
+     * @param {Vega.View} vis Vega.View instance
+     * @param {Object} signalEvents KV pairs of signal evnet names and functions. https://github.com/vega/vega-view#view_addSignalListener
      */
     removeSignalEvents(vis, signalEvents = {}) {
-        return this._invokeEventMethod(vis, 'removeSignalListener', signalEvents);
+        this._invokeEventMethod(vis, 'removeSignalListener', signalEvents);
     }
 });

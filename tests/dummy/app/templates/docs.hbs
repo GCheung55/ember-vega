@@ -1,0 +1,20 @@
+{{#docs-viewer as |viewer|}}
+
+    {{#viewer.nav as |nav|}}
+        {{nav.item 'Introduction' 'docs.index'}}
+        {{nav.item 'Usage' 'docs.usage'}}
+
+        {{nav.section 'Components' 'docs.components'}}
+        {{nav.item 'vega-vis' 'docs.components.vega-vis'}}
+        {{nav.item 'vega-vis-container-dimensions' 'docs.components.vega-vis-container-dimensions'}}
+    {{/viewer.nav}}
+
+    {{#viewer.main}}
+        <div class="docs-container">
+            <div class="docs-section">
+                {{outlet}}
+            </div>
+        </div>
+    {{/viewer.main}}
+
+{{/docs-viewer}}

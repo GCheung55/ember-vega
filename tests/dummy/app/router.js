@@ -1,12 +1,22 @@
-import EmberRouter from '@ember/routing/router';
+import AddonDocsRouter, { docsRoute } from 'ember-cli-addon-docs/router';
 import config from './config/environment';
 
-const Router = EmberRouter.extend({
-  location: config.locationType,
-  rootURL: config.rootURL
+const Router = AddonDocsRouter.extend({
+    location: config.locationType,
+    rootURL: config.rootURL,
 });
 
 Router.map(function() {
+    docsRoute(this, function() {
+        this.route('usage');
+
+        this.route('components', function() {
+            this.route('vega-vis');
+            this.route('vega-vis-container-dimensions');
+        });
+    });
+
+    this.route('not-found', { path: '/*path' });
 });
 
 export default Router;
