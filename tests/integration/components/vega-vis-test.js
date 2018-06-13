@@ -125,6 +125,18 @@ module('Integration | Component | vega vis', function(hooks) {
         assert.ok(parseSpy.calledOnceWith(config), '`parse` expected to be executed once with `config`');
     });
 
+    module('container attr', function() {
+        test('expected to be set on the vega instance', async function(assert) {
+            const spy = this.sandbox.spy(vega.View.prototype, 'initialize');
+
+            await render(hbs`{{vega-vis spec=spec container=element tagName=""}}`);
+
+            const value = get(this, 'element');
+
+            assert.ok(spy.calledWith(value), `Expected view.initialize to be executed with element passed as container attribute`);
+        });
+    });
+
     module('height attr', function() {
         const template = hbs`{{vega-vis spec=spec height=height}}`;
 

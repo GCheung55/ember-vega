@@ -60,23 +60,33 @@ module('Integration | Component | vega-vis-container-dimensions', function (hook
         assert.ok(dummyDimensions, 'Expected dimensions to change when window resize event is triggered');
     });
 
-    test('yielded dimensions computed property contains height', async function(assert) {
+    test('yielded object has dimensions property that contains height', async function(assert) {
         await render(hbs`
-            {{#vega-vis-container-dimensions as |dimensions|}}
-                {{dimensions.height}}
+            {{#vega-vis-container-dimensions as |ui|}}
+                {{ui.dimensions.height}}
             {{/vega-vis-container-dimensions}}
         `);
 
-        assert.equal(this.element.textContent.trim(), this.element.getBoundingClientRect().height, 'Expected dimensions.height to match');
+        assert.equal(this.element.textContent.trim(), this.element.getBoundingClientRect().height, 'Expected ui.dimensions.height to match');
     });
 
-    test('yielded dimensions computed property contains width', async function(assert) {
+    test('yielded object has dimensions property that contains width', async function(assert) {
         await render(hbs`
-            {{#vega-vis-container-dimensions as |dimensions|}}
-                {{dimensions.width}}
+            {{#vega-vis-container-dimensions as |ui|}}
+                {{ui.dimensions.width}}
             {{/vega-vis-container-dimensions}}
         `);
 
-        assert.equal(this.element.textContent.trim(), this.element.getBoundingClientRect().width, 'Expected dimensions.width to match');
+        assert.equal(this.element.textContent.trim(), this.element.getBoundingClientRect().width, 'Expected ui.dimensions.width to match');
+    });
+
+    test('yielded object has container property that is the component\'s element', async function(assert) {
+        await render(hbs`
+            {{#vega-vis-container-dimensions as |ui|}}
+                {{ui.container.id}}
+            {{/vega-vis-container-dimensions}}
+        `);
+
+        assert.equal(this.element.textContent.trim(), this.element.firstElementChild.id, 'Expected ui.element to match ID attributes');
     });
 });

@@ -7,11 +7,11 @@
     <div class="mx-8">
         {{#docs-demo as |demo|}}
             {{#demo.example name='vega-vis-demo.hbs'}}
-                {{#vega-vis-container-dimensions as |dimensions|}}
+                {{#vega-vis-container-dimensions as |ui|}}
                     {{vega-vis
                         spec=spec
                         data=data
-                        width=dimensions.width
+                        width=ui.dimensions.width
                         height=200
                     }}
                 {{/vega-vis-container-dimensions}}
@@ -48,43 +48,3 @@
         </div>
     </div>
 </div>
-{{!--
-<div class="example">
-    {{vega-vis
-        data=data
-        spec=spec
-        events=(hash
-            click=(action "clickEventHandler")
-        )
-        signalEvents=(hash
-            width=(action "widthSignalHandler")
-        )
-        onParseError=(action "parseError")
-        onNewVis=(action "newVis")
-    }}
-
-    <ul>
-        <li>Clicked Count: {{clickCount}}</li>
-        <li>Width Signal: {{widthSignal}}</li>
-        <li>Parse Error: {{parseErrorObject}}</li>
-    </ul>
-</div>
-
-{{#vega-vis-container-dimensions class="example" as |dimensions|}}
-    {{vega-vis
-        data=data2
-        spec=spec
-        height=(div dimensions.width 4.259259259)
-        width=dimensions.width
-    }}
-{{/vega-vis-container-dimensions}}
-
-{{vega-vis
-    data=data3
-    spec=spec
-}}
-
-<button {{action "addData"}}>Add Data</button>
-<button {{action "removeData"}}>Remove Data</button>
-<button {{action "changeData"}}>Change Data</button>
---}}

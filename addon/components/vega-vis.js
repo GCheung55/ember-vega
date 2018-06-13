@@ -327,7 +327,7 @@ export default Component.extend({
     events: null,
 
     /**
-     * Signal events to add to vega view instance.
+     * Signal events to add to Vega View instance.
      *
      * [Vega Docs: View.addSignalListener](https://vega.github.io/vega/docs/api/view/#view_addSignalListener)
      * [Vega Docs: View.removeSignalListener](https://vega.github.io/vega/docs/api/view/#view_removeSignalListener)
@@ -346,6 +346,28 @@ export default Component.extend({
      */
     fastboot: computed(function() {
         return getOwner(this).lookup('service:fastboot');
+    }),
+
+    /**
+     * Container element for rendering the Vega View instance.
+     *
+     * The visualization can be rendered in a different container if desired. This helps with reducing the number of elements.
+     *
+     * The example also sets the `tagName` property to an empty string, this effectively prevents `vega-vis` from creating its own element.
+     * 
+     * ```hbs
+     * {{#foo-thing as |element|}}
+     *     {{vega-vis spec=spec container=element tagName=""}}
+     * {{/foo-thing}}
+     * ```
+     *
+     * @computed container
+     * @argument container
+     * @default {Element} The component's element.
+     * @type {Element}
+     */
+    container: computed(function() {
+        return get(this, 'element');
     }),
 
     /**
@@ -512,8 +534,9 @@ export default Component.extend({
                     enableHover,
                     rendererType,
                     logLevel,
+                    container,
                     LOG_LEVELS
-                } = getProperties(this, 'data', 'config', 'events', 'signalEvents', 'enableHover', 'rendererType', 'logLevel', 'LOG_LEVELS');
+                } = getProperties(this, 'data', 'config', 'events', 'signalEvents', 'enableHover', 'rendererType', 'logLevel', 'container', 'LOG_LEVELS');
                 const foundLogLevel = LOG_LEVELS[logLevel];
                 let methodArgs = getProperties(this, ...methods);
 
@@ -522,7 +545,7 @@ export default Component.extend({
 
                 // Only initialize if not in fastboot.
                 if (!get(this, 'fastboot')) {
-                    vis.initialize(this.element);
+                    vis.initialize(container);
                 }
 
                 this.addEvents(vis, events);
