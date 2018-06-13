@@ -8,13 +8,13 @@
   "v1.0.0": {
     "path": "v1.0.0",
     "name": "v1.0.0",
-    "sha": "26ceffbf5e9b1d4b7a1b2d2b1ba2ef5f7121e6a3",
+    "sha": "d34fa77306bbf2ee384a9a19c29b4278f500905e",
     "tag": "v1.0.0"
   },
   "latest": {
     "path": "latest",
     "name": "latest",
-    "sha": "26ceffbf5e9b1d4b7a1b2d2b1ba2ef5f7121e6a3",
+    "sha": "d34fa77306bbf2ee384a9a19c29b4278f500905e",
     "tag": "v1.0.0"
   }
 }
