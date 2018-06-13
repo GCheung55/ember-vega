@@ -1,6 +1,6 @@
 {
   "name": "ember-vega",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Ember addon to use Vega.js, a visualization grammar built on D3.",
   "keywords": [
     "ember-addon",
