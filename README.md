@@ -7,6 +7,8 @@ Ember components with Vega, a visualization grammar built on D3.js
 
 Works with Vega 3: [Vega Documentation](https://vega.github.io/vega/docs/).
 
+Demos and Documentation: https://gcheung55.github.io/ember-vega
+
 
 Contributing
 ------------------------------------------------------------------------------
