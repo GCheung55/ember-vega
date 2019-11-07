@@ -1,17 +1,16 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { setupSinonSandbox } from 'ember-sinon-sandbox/test-support';
 import { clearRender, render, triggerEvent, settled, find } from '@ember/test-helpers';
 import { get, set } from '@ember/object';
 import { run } from '@ember/runloop';
 import hbs from 'htmlbars-inline-precompile';
+import sinon from 'sinon';
 
 module('Integration | Component | vega-vis-container', function (hooks) {
     setupRenderingTest(hooks);
-    setupSinonSandbox(hooks);
 
     test('rendering component attaches resize event listener', async function(assert) {
-        const spy = this.sandbox.spy(window, 'addEventListener');
+        const spy = sinon.spy(window, 'addEventListener');
 
         await render(hbs`{{#vega-vis-container _windowResize=_windowResize as |dimensions|}}{{/vega-vis-container}}`);
 
@@ -23,7 +22,7 @@ module('Integration | Component | vega-vis-container', function (hooks) {
     });
 
     test('destroying component removes resize event listener', async function(assert) {
-        const spy = this.sandbox.spy(window, 'removeEventListener');
+        const spy = sinon.spy(window, 'removeEventListener');
 
         await render(hbs`{{#vega-vis-container _windowResize=_windowResize as |dimensions|}}{{/vega-vis-container}}`);
 

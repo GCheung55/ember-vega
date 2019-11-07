@@ -1,15 +1,15 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { setupSinonSandbox } from 'ember-sinon-sandbox/test-support';
 import { clearRender, render, find, settled } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import { get, set } from '@ember/object';
 import { run } from '@ember/runloop';
 import vega, { changeset } from 'vega';
+import sinon from 'sinon';
 
 function basicAttrTest(attr, value, template, method = attr) {
     test('expected to be set on the vega instance', async function(assert) {
-        const spy = this.sandbox.spy(vega.View.prototype, method);
+        const spy = sinon.spy(vega.View.prototype, method);
 
         run(() => {
             set(this, attr, value);
@@ -23,7 +23,7 @@ function basicAttrTest(attr, value, template, method = attr) {
 
 function basicChangeAttrTest(attr, oldValue, newValue, template, method = attr) {
     test('change expected to update the vega instance', async function(assert) {
-        const spy = this.sandbox.spy(vega.View.prototype, method);
+        const spy = sinon.spy(vega.View.prototype, method);
 
         run(() => {
             set(this, attr, oldValue);
@@ -45,7 +45,7 @@ function basicChangeAttrTest(attr, oldValue, newValue, template, method = attr) 
 
 function basicEventTypeAttrTest(attr, value, template, method = attr) {
     test('expected to be set on the vega instance', async function(assert) {
-        const spy = this.sandbox.spy(vega.View.prototype, method);
+        const spy = sinon.spy(vega.View.prototype, method);
         const keys = Object.keys(value);
 
         run(() => {
@@ -62,8 +62,8 @@ function basicEventTypeAttrTest(attr, value, template, method = attr) {
 
 function basicEventTypeChangeAttrTest(attr, oldValue, newValue, template, addMethod, removeMethod) {
     test('change expected to update the vega instance', async function(assert) {
-        const addSpy = this.sandbox.spy(vega.View.prototype, addMethod);
-        const removeSpy = this.sandbox.spy(vega.View.prototype, removeMethod);
+        const addSpy = sinon.spy(vega.View.prototype, addMethod);
+        const removeSpy = sinon.spy(vega.View.prototype, removeMethod);
         const oldKeys = Object.keys(oldValue);
         const newKeys = Object.keys(newValue);
 
@@ -95,7 +95,6 @@ function basicEventTypeChangeAttrTest(attr, oldValue, newValue, template, addMet
 
 module('Integration | Component | vega vis', function(hooks) {
     setupRenderingTest(hooks);
-    setupSinonSandbox(hooks);
 
     set(this, 'spec', {});
 
@@ -116,18 +115,24 @@ module('Integration | Component | vega vis', function(hooks) {
     });
 
     test('config attr', async function(assert) {
-        const parseSpy = this.sandbox.spy(vega, 'parse');
-        const config = {};
+        const config = {
+            events: {
+                defaults: {
+                    prevent: ['wheel']
+                }
+            }
+        };
         set(this, 'config', config);
 
-        await render(hbs`{{vega-vis config=config spec=spec}}`);
+        await render(hbs`{{vega-vis config=config spec=spec vis=vis}}`);
+        const vis = get(this, 'vis');
 
-        assert.ok(parseSpy.calledOnceWith(config), '`parse` expected to be executed once with `config`');
+        assert.equal(vis._runtime.eventConfig.defaults.prevent.wheel, true, 'Expected `config` to be parsed and be merged with `spec.config`');
     });
 
     module('visContainer attr', function() {
         test('expected to be set on the vega instance', async function(assert) {
-            const spy = this.sandbox.spy(vega.View.prototype, 'initialize');
+            const spy = sinon.spy(vega.View.prototype, 'initialize');
 
             await render(hbs`{{vega-vis spec=spec visContainer=element tagName=""}}`);
 
@@ -170,19 +175,18 @@ module('Integration | Component | vega vis', function(hooks) {
         //     assert.rejects(render(hbs`{{vega-vis}}`), 'Expected to throw when `spec` is not passed to the component');
         // });
         test('expected to be set on the vega instance', async function(assert) {
-            const parseSpy = this.sandbox.spy(vega, 'parse');
-            const spec = {};
+            const spec = { signals: [ { name: 'foo', value: 'bar' } ]};
             run(() => {
                 set(this, 'spec', spec);
             });
 
-            await render(hbs`{{vega-vis spec=spec}}`);
+            await render(hbs`{{vega-vis spec=spec vis=vis}}`);
+            const vis = get(this, 'vis');
 
-            assert.ok(parseSpy.calledOnceWith(spec), '`parse` expected to be executed once with `spec`');
+            assert.equal(vis._runtime.signals.foo.value, 'bar', 'Expected `spec` to be parsed');
         });
 
         test('change expected to update the vega instance', async function(assert) {
-            const parseSpy = this.sandbox.spy(vega, 'parse');
             const oldSpec = {width: 1};
             const spec = {width: 2};
             let vis;
@@ -193,23 +197,24 @@ module('Integration | Component | vega vis', function(hooks) {
             await render(hbs`{{vega-vis vis=vis spec=spec}}`);
             vis = get(this, 'vis');
 
-            assert.ok(parseSpy.calledWith(oldSpec), '`parse` expected to be executed once with oldSpec');
+            assert.equal(vis._runtime.signals.width.value, 1, 'Expect `oldSpec` to be parsed on initial render');
 
             run(() => {
                 set(this, 'spec', spec);
             });
 
             await settled();
+            const newVis = get(this, 'vis');
 
-            assert.ok(parseSpy.calledWith(spec), '`parse` expected to be executed once with spec');
-            assert.notEqual(vis, get(this, 'vis'), 'Expected a new vega instance to be created');
+            assert.equal(newVis._runtime.signals.width.value, 2, 'Expect new `spec` to be parsed when `spec` changes');
+            assert.notEqual(vis, newVis, 'Expected a new vega instance to be created');
         });
     });
 
 
     module('enableHover attr', function() {
         test('by default expected to trigger vega instance hover method', async function(assert) {
-            const spy = this.sandbox.spy(vega.View.prototype, 'hover');
+            const spy = sinon.spy(vega.View.prototype, 'hover');
 
             await render(hbs`{{vega-vis spec=spec}}`);
 
@@ -217,7 +222,7 @@ module('Integration | Component | vega vis', function(hooks) {
         });
 
         test('when false expected to not trigger vega instance hover method', async function(assert) {
-            const spy = this.sandbox.spy(vega.View.prototype, 'hover');
+            const spy = sinon.spy(vega.View.prototype, 'hover');
 
             await render(hbs`{{vega-vis spec=spec enableHover=false}}`);
 
@@ -236,7 +241,7 @@ module('Integration | Component | vega vis', function(hooks) {
         const template = hbs`{{vega-vis spec=spec logLevel=logLevel}}`;
 
         test('expected to lookup log level and set on vega instance', async function(assert) {
-            const spy = this.sandbox.spy(vega.View.prototype, 'logLevel');
+            const spy = sinon.spy(vega.View.prototype, 'logLevel');
 
             run(() => {
                 set(this, 'logLevel', 'Warn');
@@ -248,7 +253,7 @@ module('Integration | Component | vega vis', function(hooks) {
         });
 
         test('change expected to update the vega instance with looked up log level', async function(assert) {
-            const spy = this.sandbox.spy(vega.View.prototype, 'logLevel');
+            const spy = sinon.spy(vega.View.prototype, 'logLevel');
 
             run(() => {
                 set(this, 'logLevel', 'Warn');
@@ -308,14 +313,14 @@ module('Integration | Component | vega vis', function(hooks) {
 
     module('data attr', function() {
         test('expected to be set on the vega instance', async function(assert) {
-            const spy = this.sandbox.spy();
-            const changeSpy = this.sandbox.spy(vega.View.prototype, 'change');
+            const spy = sinon.spy();
+            const changeSpy = sinon.spy(vega.View.prototype, 'change');
             const data = {
                 foo: [1],
                 bar: spy,
                 baz: changeset().insert([2])
             };
-            const matchChangeset = this.sandbox.match.has('constructor', changeset);
+            const matchChangeset = sinon.match.has('constructor', changeset);
             let vis;
 
             run(() => {
@@ -429,7 +434,7 @@ module('Integration | Component | vega vis', function(hooks) {
 
     module('onNewVis method callback attr', function() {
         test('expected to be executed when a new vega instance is created', async function(assert) {
-            const spy = this.sandbox.spy();
+            const spy = sinon.spy();
             let vis;
             set(this, 'onNewVis', spy);
 
@@ -443,13 +448,13 @@ module('Integration | Component | vega vis', function(hooks) {
 
     module('onParseError method attr', function() {
         test('expected to be executed when there is a parse error during vega instance creation', async function(assert) {
-            const spy = this.sandbox.spy();
+            const spy = sinon.spy();
 
             set(this, 'onParseError', spy);
 
             await render(hbs`{{vega-vis spec=spec signalEvents=(hash foo=false) onParseError=onParseError}}`);
 
-            assert.ok(spy.calledOnceWith(this.sandbox.match.instanceOf(Error)), 'Expected onParseError callback to be executed with error object');
+            assert.ok(spy.calledOnceWith(sinon.match.instanceOf(Error)), 'Expected onParseError callback to be executed with error object');
         });
     });
 

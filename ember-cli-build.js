@@ -7,7 +7,9 @@ module.exports = function (defaults) {
     let app = new EmberAddon(defaults, {
         babel: {
             // Enable spread operator in dummy app.
-            plugins: ['transform-object-rest-spread']
+            plugins: [
+                '@babel/plugin-proposal-object-rest-spread'
+            ]
         },
         'ember-math-helpers': {
             only: ['div']
