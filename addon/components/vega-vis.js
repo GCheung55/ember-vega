@@ -139,8 +139,11 @@ export default Component.extend({
      * @required
      * @type {Object}
      */
-    spec: computed(function() {
-        throw new Error('spec parameter is required for vega-vis');
+    spec: computed({
+        get() {
+            throw new Error('spec parameter is required for vega-vis');
+        },
+        set(key, value) { return value; }
     }),
 
     /**
@@ -268,8 +271,11 @@ export default Component.extend({
      * @computed data
      * @type {Object.<String, (Array|Function)>}
      */
-    data: computed(function() {
-        return {};
+    data: computed({
+        get() {
+            return {};
+        },
+        set(key, value) { return value; }
     }),
 
     /**
@@ -366,8 +372,11 @@ export default Component.extend({
      * @default {Element} The component's element.
      * @type {Element}
      */
-    visContainer: computed(function() {
-        return get(this, 'element');
+    visContainer: computed({
+        get() {
+            return get(this, 'element');
+        },
+        set(key, value) { return value; }
     }),
 
     /**

@@ -23,7 +23,7 @@ function findHost() {
 }
 
 module.exports = {
-    name: 'ember-vega',
+    name: require('./package').name,
 
     isDevelopingAddon: function() {
         return true;

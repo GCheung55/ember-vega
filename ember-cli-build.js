@@ -1,14 +1,6 @@
 'use strict';
 
 const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
-const EmberAddonDocs = require('ember-cli-addon-docs');
-
-EmberAddonDocs.options.ace = {
-    modes: ['handlebars', 'json'],
-    workers: ['json']
-};
-
-EmberAddonDocs.options['ember-cli-tailwind'].shouldIncludeStyleguide = true;
 
 module.exports = function (defaults) {
 
@@ -20,13 +12,11 @@ module.exports = function (defaults) {
         'ember-math-helpers': {
             only: ['div']
         },
-        // 'ember-cli-addon-docs': {
-        //     ace: {
-        //         modes: ['handlebars', 'json'],
-        //         workers: ['json'],
-        //         exts: ['beautify']
-        //     }
-        // }
+        ace: {
+            modes: ['handlebars', 'json'],
+            workers: ['json'],
+            exts: ['beautify']
+        }
     });
 
     /*
