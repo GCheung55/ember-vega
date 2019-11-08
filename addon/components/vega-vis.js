@@ -717,7 +717,7 @@ export default Component.extend({
     willDestroyElement() {
         this._super(...arguments);
 
-        scheduleOnce('destroy', this, 'clearVis');
+        scheduleOnce('afterRender', this, 'clearVis');
     },
 
     /**
