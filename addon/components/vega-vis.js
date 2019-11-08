@@ -600,7 +600,7 @@ export default Component.extend({
                 this.onNewVis(vis);
 
             } catch(e) {
-                scheduleOnce('destroy', this, 'clearVis');
+                scheduleOnce('afterRender', this, 'clearVis');
 
                 this.onParseError(e);
             }
@@ -618,9 +618,9 @@ export default Component.extend({
         if (vis) {
             // `finalize` will also remove event listeners attached to the DOM
             vis.finalize();
-
-            set(this, 'vis', null);
         }
+
+        set(this, 'vis', null);
     },
 
     /**
@@ -729,7 +729,7 @@ export default Component.extend({
      * @param {String|undefined} encode
      */
     visRun(vis, encode) {
-        let {
+        const {
             isDestroyed,
             isDestroying
         } = getProperties(this, 'isDestroyed', 'isDestroying');
