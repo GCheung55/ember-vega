@@ -620,7 +620,14 @@ export default Component.extend({
             vis.finalize();
         }
 
-        set(this, 'vis', null);
+        const {
+            isDestroying,
+            isDestroyed
+        } = getProperties(this, 'isDestroying', 'isDestroyed');
+
+        if (!isDestroyed || isDestroying) {
+            set(this, 'vis', null);
+        }
     },
 
     /**
