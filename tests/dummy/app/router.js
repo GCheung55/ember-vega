@@ -7,16 +7,17 @@ const Router = AddonDocsRouter.extend({
 });
 
 Router.map(function() {
-    docsRoute(this, function() {
-        this.route('usage');
+  docsRoute(this, function() {
+      this.route('usage');
+      this.route('vega-lite');
 
-        this.route('components', function() {
-            this.route('vega-vis');
-            this.route('vega-vis-container');
-        });
-    });
+      this.route('components', function() {
+          this.route('vega-vis');
+          this.route('vega-vis-container');
+      });
+  });
 
-    this.route('not-found', { path: '/*path' });
+  this.route('not-found', { path: '/*path' });
 });
 
 export default Router;

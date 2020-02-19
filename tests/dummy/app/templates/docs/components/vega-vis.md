@@ -1,8 +1,8 @@
 # Vega Vis
 
-This component creates and renders a Vega visualization and provides an interface for passing properties to the Vega View instance.
+This component creates and renders a Vega.js visualization and provides an interface for passing properties to the Vega View instance.
 
-A `vis` property is exposed to enable direct interaction with the Vega View instance. 
+A `vis` property is exposed to enable direct interaction with the Vega.js View instance. 
 
 ```handlebars
 {{vega-vis
@@ -28,9 +28,9 @@ Refer to the {{docs-link "vega-vis component API" "docs.api.item" "components/ve
 
 ## Rendering a Visualization
 
-The only required property is the `spec`, a plain Javascript Object, which instructs Vega how to render a visualization.
+The only required property is the `spec`, a plain Javascript Object, which instructs Vega.js how to render a visualization.
 
-Refer to [Vega Docs: Spec](https://vega.github.io/vega/docs/specification/) for more information.
+Refer to [Vega.js Docs: Spec](https://vega.github.io/vega/docs/specification/) for more information.
 
 The basic structure of the `spec` looks like:
 
@@ -59,7 +59,7 @@ The basic structure of the `spec` looks like:
 > 
 > Each dataset in `spec.data` MAY contain `values`, which will be overwritten if `data` property passed to the component contains a matching dataset.
 > 
-> Refer to [Vega Docs: Data](https://vega.github.io/vega/docs/data/) for more information.
+> Refer to [Vega.js Docs: Data](https://vega.github.io/vega/docs/data/) for more information.
 
 
 {{#docs-demo as |demo|}}
@@ -84,8 +84,8 @@ Each dataset must also be defined in`spec.data`.
 ```json
 {
     "data": [
-        { "name": "foo"},
-        { "name": "bar"}
+        {"name": "foo"},
+        {"name": "bar"}
     ]
 }
 ```
@@ -105,7 +105,7 @@ The dataset in a `data` property may be one of three values:
 
 1. An array.
 2. A function.
-3. A Vega Changeset instance.
+3. A Vega.js Changeset instance.
 
 > In order to update the visualization, the `data` property must be a new object. 
 
@@ -113,7 +113,7 @@ The dataset in a `data` property may be one of three values:
 
 As an array, the dataset will be processed for rendering the visualization. The dataset will replace the previous dataset.
 
-Copies of the data should be made because Vega Vis will mutate the dataset, so don't pass in the source.
+Copies of the data should be made because Vega.js Vis will mutate the dataset, so don't pass in the source.
 
 {{#docs-demo as |demo|}}
     {{#vega-vis-demo-data-array as |spec data|}}
@@ -135,7 +135,7 @@ Copies of the data should be made because Vega Vis will mutate the dataset, so d
 
 A dataset as a function provides more flexibility and control. The function is passed three arguments:
 
-1. `vis` - the Vega View instance.
+1. `vis` - the Vega.js View instance.
 2. `data` - the current dataset corresponding to the dataset's name/key.
 3. `change` - a changeset instance is an interface for modifying/removing/inserting data into the existing dataset.
 
@@ -156,9 +156,9 @@ A dataset as a function provides more flexibility and control. The function is p
 {{/docs-demo}}
 
 
-### Dataset as a Vega Changeset
+### Dataset as a Vega.js Changeset
 
-A Vega Changeset instance will be applied on the Vega View instance to update the dataset with the matching name/key.
+A Vega.js Changeset instance will be applied on the Vega.js View instance to update the dataset with the matching name/key.
 
 {{#docs-demo as |demo|}}
     {{#vega-vis-demo-data-changeset as |spec data|}}
@@ -176,9 +176,9 @@ A Vega Changeset instance will be applied on the Vega View instance to update th
     {{demo.snippet name="vega-vis-data-changeset-demo.hbs"}}
 {{/docs-demo}}
 
-## Changing Data with Vega Changeset
+## Changing Data with Vega.js Changeset
           
-Below are some examples of modifying, removing, inserting, and replacing data by using Vega Changeset.
+Below are some examples of modifying, removing, inserting, and replacing data by using Vega.js Changeset.
 
 Assume that the change is within a dataset as a function.
 
@@ -216,7 +216,7 @@ function remove(vis, data, change) {
 }
 ```
 
-Alternatively, the Vega View instance has a helper function, where the second argument is what `changeset.remove` accepts.
+Alternatively, the Vega.js View instance has a helper function, where the second argument is what `changeset.remove` accepts.
                     
 ```javascript
 function remove(vis, data, change) {
@@ -238,7 +238,7 @@ function insert(vis, data, change) {
 }
 ```
 
-Alternatively, the vega instance has a helper function, where the second argument is what `changeset.insert` accepts.
+Alternatively, the Vega.js instance has a helper function, where the second argument is what `changeset.insert` accepts.
 
 ```javascript
 function insert(vis, data, change) {

@@ -25,8 +25,15 @@ npm install --dev ember-vega && ember generate ember-vega
 
 ## Import
 
-Vega can be imported after installation.
+Vega.js can be imported after installation.
 
 ```javascript
 import vega, { changeset, parse, View } from 'vega';
 ```
+
+## Components
+
+This addon provides two components for rendering visualizations with Vega.js.
+
+* {{docs-link 'Vega Vis' 'docs.components.vega-vis'}}
+* {{docs-link 'Vega Vis Container' 'docs.components.vega-vis-container'}}
