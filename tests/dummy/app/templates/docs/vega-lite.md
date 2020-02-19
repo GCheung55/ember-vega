@@ -13,9 +13,9 @@ Think of Vega-Lite's specifications as the simpler version of Vega.js specificat
 
 ## Installation
 
-Vega-Lite is not installed with `ember-vega-vis`, so you will need to add it as a dependency in your app.
+Vega-Lite is not installed with `ember-vega`, so you will need to add it as a dependency in your app.
 
-Note: Use [`ember-auto-import`](https://github.com/ef4/ember-auto-import) to simplify importing node modules. `ember-vega-vis` uses it!
+Note: Use [`ember-auto-import`](https://github.com/ef4/ember-auto-import) to simplify importing node modules.
 
 With NPM:
 ```
