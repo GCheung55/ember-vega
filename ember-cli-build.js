@@ -1,32 +1,24 @@
 'use strict';
 
 const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
-const EmberAddonDocs = require('ember-cli-addon-docs');
-
-EmberAddonDocs.options.ace = {
-    modes: ['handlebars', 'json'],
-    workers: ['json']
-};
-
-EmberAddonDocs.options['ember-cli-tailwind'].shouldIncludeStyleguide = true;
 
 module.exports = function (defaults) {
 
     let app = new EmberAddon(defaults, {
         babel: {
             // Enable spread operator in dummy app.
-            plugins: ['transform-object-rest-spread']
+            plugins: [
+                '@babel/plugin-proposal-object-rest-spread'
+            ]
         },
         'ember-math-helpers': {
             only: ['div']
         },
-        // 'ember-cli-addon-docs': {
-        //     ace: {
-        //         modes: ['handlebars', 'json'],
-        //         workers: ['json'],
-        //         exts: ['beautify']
-        //     }
-        // }
+        ace: {
+            modes: ['handlebars', 'json'],
+            workers: ['json'],
+            exts: ['beautify']
+        }
     });
 
     /*

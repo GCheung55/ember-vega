@@ -43,8 +43,11 @@ export default Component.extend({
      * @computed dimensions
      * @type {ClientRect}
      */
-    dimensions: computed(function() {
-        return this.computeComponentDimensions();
+    dimensions: computed({
+        get() {
+            return this.computeComponentDimensions();
+        }, 
+        set(key, value) { return value; }
     }),
 
     /**
