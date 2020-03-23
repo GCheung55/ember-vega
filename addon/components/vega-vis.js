@@ -625,7 +625,7 @@ export default Component.extend({
             isDestroyed
         } = getProperties(this, 'isDestroying', 'isDestroyed');
 
-        if (!isDestroyed || isDestroying) {
+        if (!isDestroyed || !isDestroying) {
             set(this, 'vis', null);
         }
     },
