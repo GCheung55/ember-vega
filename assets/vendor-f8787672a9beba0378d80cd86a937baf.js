@@ -10185,8 +10185,8 @@ if(Ember.get(this,"fastboot")||y.initialize(p),this.addEvents(y,l),this.addSigna
 this.visRun(y),Ember.set(this,"vis",y),this.onNewVis(y)}catch(b){Ember.run.scheduleOnce("afterRender",this,"clearVis"),this.onParseError(b)}},clearVis:function(){var e=Ember.get(this,"vis")
 e&&e.finalize()
 var t=Ember.getProperties(this,"isDestroying","isDestroyed"),n=t.isDestroying
-t.isDestroyed&&n||Ember.set(this,"vis",null)},_normalizeData:function(e){return Ember.isArray(e)&&(e=e.reduce((function(e,t){var n=t.name,r=t.values
-return e[n]=r,e}),{})),e},updateData:function(e,n,r){e&&r&&("function"==typeof r?r(e,e.data(n),(0,t.changeset)()):(this.isChangeSet(r)||(r=(0,t.changeset)().remove((function(){return!0})).insert(r)),e.change(n,r)))},willDestroyElement:function(){this._super.apply(this,arguments),Ember.run.scheduleOnce("afterRender",this,"clearVis")},visRun:function(e,t){var n=Ember.getProperties(this,"isDestroyed","isDestroying"),r=n.isDestroyed,i=n.isDestroying
+t.isDestroyed&&!n||Ember.set(this,"vis",null)},_normalizeData:function(e){return Ember.isArray(e)&&(e=e.reduce((function(e,t){var n=t.name,r=t.values
+return e[n]=r,e}),{})),e},updateData:function(e,n,r){e&&r&&("function"==typeof r?r(e,e.data(n),(0,t.changeset)()):(this.isChangeSet(r)||(r=(0,t.changeset)().remove((function(){return!0})).insert(r)),e.change(n,r)))},willDestroyElement:function(){this._super.apply(this,arguments),this.clearVis()},visRun:function(e,t){var n=Ember.getProperties(this,"isDestroyed","isDestroying"),r=n.isDestroyed,i=n.isDestroying
 !e||r&&i||e.run(t)},_invokeEventMethod:function(e,t,n){if(e&&n)for(var r=0,o=Object.entries(n);r<o.length;r++){var a=i(o[r],2),s=a[0],u=a[1]
 e[t](s,u)}},addEvents:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{}
 this._invokeEventMethod(e,"addEventListener",t)},removeEvents:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{}
