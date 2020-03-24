@@ -724,11 +724,9 @@ export default Component.extend({
     willDestroyElement() {
         this._super(...arguments);
 
-        /**
-         * Clear without scheduling because scheduling introduces a race condition where a two-way-bound property gets nulled
-         * on a "parent" component/controller that has been destroyed. Without scheduling, the two-way-bound property changes without
-         * trying to set on a destroyed component/controller.
-         */
+        // Clear without scheduling because scheduling introduces a race condition where a two-way-bound property gets nulled
+        // on a "parent" component/controller that has been destroyed. Without scheduling, the two-way-bound property changes without
+        // trying to set on a destroyed component/controller.
         this.clearVis();
     },
 
