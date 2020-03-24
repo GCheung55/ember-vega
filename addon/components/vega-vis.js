@@ -625,7 +625,7 @@ export default Component.extend({
             isDestroyed
         } = getProperties(this, 'isDestroying', 'isDestroyed');
 
-        if (!isDestroyed || !isDestroying) {
+        if (!isDestroyed || isDestroying) {
             set(this, 'vis', null);
         }
     },
@@ -724,7 +724,10 @@ export default Component.extend({
     willDestroyElement() {
         this._super(...arguments);
 
-        scheduleOnce('afterRender', this, 'clearVis');
+        // Clear without scheduling because scheduling introduces a race condition where a two-way-bound property gets nulled
+        // on a "parent" component/controller that has been destroyed. Without scheduling, the two-way-bound property changes without
+        // trying to set on a destroyed component/controller.
+        this.clearVis();
     },
 
     /**
